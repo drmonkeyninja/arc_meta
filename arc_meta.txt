@@ -1,0 +1,38 @@
+# arc_meta v1.0
+# Title and Meta tags
+# Andy Carter
+# http://andy-carter.com/
+
+# ......................................................................
+# This is a plugin for Textpattern - http://textpattern.com/
+# To install: textpattern > admin > plugins
+# Paste the following text into the 'Install plugin' box:
+# ......................................................................
+
+YToxMDp7czo0OiJuYW1lIjtzOjg6ImFyY19tZXRhIjtzOjc6InZlcnNpb24iO3M6MzoiMS4w
+IjtzOjY6ImF1dGhvciI7czoxMToiQW5keSBDYXJ0ZXIiO3M6MTA6ImF1dGhvcl91cmkiO3M6
+MjM6Imh0dHA6Ly9hbmR5LWNhcnRlci5jb20vIjtzOjExOiJkZXNjcmlwdGlvbiI7czoxOToi
+VGl0bGUgYW5kIE1ldGEgdGFncyI7czo1OiJvcmRlciI7czoxOiI1IjtzOjQ6InR5cGUiO3M6
+MToiMCI7czo0OiJoZWxwIjtzOjE4OiIJPGgxPmFyY19tZXRhPC9oMT4iO3M6NDoiY29kZSI7
+czoxMDk0OiJnbG9iYWwgJHByZWZzLCAkdHhwY2ZnOwoKZnVuY3Rpb24gYXJjX21ldGFfdGl0
+bGUoJGF0dHMsICR0aGluZz1udWxsKQp7CglnbG9iYWwgJHBhcmVudGlkLCAkdGhpc2FydGlj
+bGUsICRpZCwgJHEsICRjLCAkY29udGV4dCwgJHMsICRzaXRlbmFtZSwgJHByZWZzOwoKCWV4
+dHJhY3QobEF0dHMoYXJyYXkoCgkJJ3NlcGFyYXRvcicgPT4gJyB8ICcsCgkJJ3RpdGxlJyA9
+PiBudWxsCgkpLCAkYXR0cykpOwoKCWlmICgkdGl0bGU9PT1udWxsKSB7CgoJCWlmICgkcGFy
+ZW50X2lkKSB7CgkJCSR0aXRsZSA9IGdUeHQoJ2NvbW1lbnRzX29uJykuJyAnLmVzY2FwZV90
+aXRsZShzYWZlX2ZpZWxkKCdUaXRsZScsICd0ZXh0cGF0dGVybicsICJJRCA9ICRwYXJlbnRf
+aWQiKSkgLiAkc2VwYXJhdG9yIC4gdHhwc3BlY2lhbGNoYXJzKCRzaXRlbmFtZSk7CgkJfSBl
+bHNlaWYgKCR0aGlzYXJ0aWNsZVsndGl0bGUnXSkgewoJCQkkdGl0bGUgPSBlc2NhcGVfdGl0
+bGUoJHRoaXNhcnRpY2xlWyd0aXRsZSddKSAuICRzZXBhcmF0b3IgLiB0eHBzcGVjaWFsY2hh
+cnMoJHNpdGVuYW1lKTsKCQl9IGVsc2VpZiAoJHEpIHsKCQkJJG91dCAuPSBnVHh0KCdzZWFy
+Y2hfcmVzdWx0cycpIC4gJzogJyAuIHR4cHNwZWNpYWxjaGFycygkcSkgLiAkc2VwYXJhdG9y
+IC4gdHhwc3BlY2lhbGNoYXJzKCRzaXRlbmFtZSk7CgkJfSBlbHNlaWYgKCRjKSB7CgkJCSR0
+aXRsZSA9IHR4cHNwZWNpYWxjaGFycyhmZXRjaF9jYXRlZ29yeV90aXRsZSgkYywgJGNvbnRl
+eHQpKSAuICRzZXBhcmF0b3IgLiB0eHBzcGVjaWFsY2hhcnMoJHNpdGVuYW1lKTsKCQl9IGVs
+c2VpZiAoJHMgYW5kICRzICE9ICdkZWZhdWx0JykgewoJCQkkdGl0bGUgPSB0eHBzcGVjaWFs
+Y2hhcnMoZmV0Y2hfc2VjdGlvbl90aXRsZSgkcykpIC4gJHNlcGFyYXRvciAuIHR4cHNwZWNp
+YWxjaGFycygkc2l0ZW5hbWUpOwoJCX0gZWxzZSB7CgkJCSR0aXRsZSA9IHR4cHNwZWNpYWxj
+aGFycygkc2l0ZW5hbWUpIC4gJHNlcGFyYXRvciAuIHR4cHNwZWNpYWxjaGFycygkcHJlZnNb
+J3NpdGVfc2xvZ2FuJ10pOwoJCX0KCgl9CgoJJGh0bWwgPSB0YWcoJHRpdGxlLCAndGl0bGUn
+KTsKCglyZXR1cm4gJGh0bWw7Cn0KCiI7czozOiJtZDUiO3M6MzI6IjY3ODE0NjZiMTEyMTJi
+NDM1NGM0OTg1YTI0YmU5YmNmIjt9
