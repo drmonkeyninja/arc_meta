@@ -13,7 +13,7 @@ if (!defined('txpinterface'))
 # --- BEGIN PLUGIN CODE ---
 global $prefs, $txpcfg;
 
-function arc_meta_title($atts, $thing=null)
+function arc_meta_title($atts)
 {
 	global $parentid, $thisarticle, $id, $q, $c, $context, $s, $sitename, $prefs;
 
@@ -45,6 +45,24 @@ function arc_meta_title($atts, $thing=null)
 	return $html;
 }
 
+function arc_meta_canonical($atts)
+{
+	global $thisarticle, $prefs, $s;
+
+	if ($thisarticle['thisid']) {
+		$url = permlinkurl($thisarticle);
+	} elseif ($s and $s != 'default') {
+		$url = pagelinkurl(array('s' => $s));
+	} else {
+		$url = hu;
+	}
+
+	$html = "<link rel='canonical' href='$url' />";
+
+	return $html;
+
+}
+
 
 # --- END PLUGIN CODE ---
 if (0) {
@@ -53,6 +71,22 @@ if (0) {
 # --- BEGIN PLUGIN HELP ---
 
 h1. arc_meta
+
+h2. Usage
+
+All of the following tags should be used within your templates' @<head>@ tags.
+
+h3. arc_meta_title
+
+Outputs a SEO friendly @<title>@ tag.
+
+bc. <txp:arc_meta_title />
+
+h3. arc_meta_canonical
+
+Specify the page's canonical URL. See Google's "Specify Your Canonical":http://googlewebmastercentral.blogspot.com/2009/02/specify-your-canonical.html for an explanation.
+
+bc. <txp:arc_meta_canonical />
 
 # --- END PLUGIN HELP ---
 -->
