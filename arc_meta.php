@@ -5,13 +5,16 @@ $plugin['author'] = 'Andy Carter';
 $plugin['author_uri'] = 'http://andy-carter.com/';
 $plugin['description'] = 'Title and Meta tags';
 $plugin['order'] = '5';
-$plugin['type'] = '0';
+$plugin['type'] = '5';
+$plugin['flags'] = '3';
 
 if (!defined('txpinterface'))
 	@include_once('zem_tpl.php');
 
 # --- BEGIN PLUGIN CODE ---
 global $prefs, $txpcfg;
+
+register_callback('_arc_meta_install','plugin_lifecycle.arc_meta', 'installed');
 
 function arc_meta_title($atts)
 {
@@ -63,6 +66,90 @@ function arc_meta_canonical($atts)
 
 }
 
+if (@txpinterface == 'admin') 
+{
+	register_callback('_arc_meta_article_meta', 'article_ui', 'keywords');
+	register_callback('_arc_meta_article_meta_save', 'ping');
+	register_callback('_arc_meta_article_meta_save', 'article_saved');
+	register_callback('_arc_meta_article_meta_save', 'article_posted');
+}
+
+function _arc_meta_install()
+{
+	$sql = "CREATE TABLE IF NOT EXISTS " . PFX . "arc_meta (
+		`id` int(11) NOT NULL AUTO_INCREMENT,
+		`type` varchar(8) NOT NULL,
+		`type_id` int(11) NOT NULL,
+		`title` varchar(65) DEFAULT NULL,
+		`override_title` tinyint(1) DEFAULT NULL,
+		`description` varchar(150) DEFAULT NULL,
+		PRIMARY KEY (`id`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;";
+
+	if (!safe_query($sql)) {
+		return 'Error - unable to create arc_meta table';
+	}
+
+	return;
+}
+
+function _arc_meta_article_meta($event, $step, $data, $rs)
+{
+	$meta = array(
+		'id' => null,
+		'title' => null,
+		'description' => null
+	);
+	if ($rs['ID']) {
+		$articleMeta = safe_row('*', 'arc_meta', "type_id={$rs['ID']} AND type='article'");
+		$meta = array_merge($meta, $articleMeta);
+	}
+
+	$form = hInput('arc_meta_id', $meta['id']);
+	$form .= "<p class='arc_meta_title'>";
+	$form .= tag('Title', 'label', ' for="arc_meta_title"') . '<br />';
+	$form .= fInput('text', 'arc_meta_title', $meta['title'], '', '', '', '32', '', 'arc_meta_title');
+	$form .= "</p>";
+	$form .= "<p class='arc_meta_description'>";
+	$form .= tag('Description', 'label', ' for="arc_meta_description"') . '<br />';
+	$form .= text_area('arc_meta_description', null, null, $meta['description'], 'arc_meta_description');
+	$form .= "</p>";
+
+	return $form.$data;
+}
+
+function _arc_meta_article_meta_save($event, $step)
+{
+	$articleId = empty($GLOBALS['ID']) ? gps('ID') : $GLOBALS['ID'];
+
+	$metaId = gps('arc_meta_id');
+	$metaTitle = gps('arc_meta_title');
+	$metaDescription = gps('arc_meta_description');
+
+	$values = array(
+		'type' => 'article',
+		'type_id' => $articleId,
+		'title' => doSlash($metaTitle),
+		'description' => doSlash($metaDescription)
+	);
+
+	foreach ($values as $key => $value) {
+		$sql[] = "$key = '$value'";
+	}
+	$sql = implode(', ', $sql);
+
+	if ($metaId) {
+
+		// Update existing meta data.
+		safe_update('arc_meta', $sql, "id=$metaId");
+
+	} elseif (!empty($metaTitle) || !empty($metaDescription)) { 
+
+		// Create new meta data only if there is data to be saved.
+		safe_insert('arc_meta', $sql);
+
+	}
+}
 
 # --- END PLUGIN CODE ---
 if (0) {
