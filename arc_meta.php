@@ -27,19 +27,30 @@ function arc_meta_title($atts)
 	
 	if ($title===null) {
 
-		if ($parent_id) {
-			$title = gTxt('comments_on').' '.escape_title(safe_field('Title', 'textpattern', "ID = $parent_id")) . $separator . txpspecialchars($sitename);
-		} elseif ($thisarticle['title']) {
-			$title = escape_title($thisarticle['title']) . $separator . txpspecialchars($sitename);
+		$meta = _arc_meta();
+
+		$tokens = array(
+			'_%n_' => txpspecialchars($sitename),
+			'_%t_' => txpspecialchars($prefs['site_slogan'])
+		);
+
+		if (!empty($parent_id) || !empty($thisarticle['title'])) {
+			$tokens['_%a_'] = empty($meta['title']) ? escape_title($thisarticle['title']) : $meta['title'];
+			$pattern = !empty($parent_id) ? gTxt('comments_on').' %a | %n' : '%a | %n';
 		} elseif ($q) {
-			$out .= gTxt('search_results') . ': ' . txpspecialchars($q) . $separator . txpspecialchars($sitename);
+			$tokens['_%q_'] = txpspecialchars($q);
+			$pattern = gTxt('search_results') . ': ' . '%q | %n';
 		} elseif ($c) {
-			$title = txpspecialchars(fetch_category_title($c, $context)) . $separator . txpspecialchars($sitename);
+			$tokens['_%c_'] = txpspecialchars(fetch_category_title($c, $context));
+			$pattern = '%c | %n';
 		} elseif ($s and $s != 'default') {
-			$title = txpspecialchars(fetch_section_title($s)) . $separator . txpspecialchars($sitename);
+			$tokens['_%s_'] = txpspecialchars(fetch_section_title($s));
+			$pattern = '%s | %n';
 		} else {
-			$title = txpspecialchars($sitename) . $separator . txpspecialchars($prefs['site_slogan']);
+			$pattern = '%n | %t';
 		}
+
+		$title = preg_replace(array_keys($tokens), array_values($tokens), $pattern);
 
 	}
 
@@ -52,9 +63,9 @@ function arc_meta_canonical($atts)
 {
 	global $thisarticle, $prefs, $s;
 
-	if ($thisarticle['thisid']) {
+	if (!empty($thisarticle['thisid'])) {
 		$url = permlinkurl($thisarticle);
-	} elseif ($s and $s != 'default') {
+	} elseif (!empty($s) and $s != 'default') {
 		$url = pagelinkurl(array('s' => $s));
 	} else {
 		$url = hu;
@@ -63,6 +74,50 @@ function arc_meta_canonical($atts)
 	$html = "<link rel='canonical' href='$url' />";
 
 	return $html;
+
+}
+
+function arc_meta_description($atts)
+{
+	$meta = _arc_meta();
+
+	$description = urlencode($meta['description']);
+
+	$html = "<meta name='description' content='$description' />";
+
+	return $html;
+
+}
+
+function _arc_meta()
+{
+	global $thisarticle, $s, $c, $arc_meta;
+
+	if (empty($arc_meta)) {
+
+		if (!empty($thisarticle['thisid'])) {
+			$typeId = $thisarticle['thisid'];
+			$type = 'article';
+		} elseif (!empty($c)) {
+			$type = 'category';
+		} elseif (!empty($s)) {
+			$type = 'section';
+		}
+		
+		$arc_meta = array(
+			'id' => null,
+			'title' => null,
+			'description' => null
+		);
+
+		if (!empty($typeId) && !empty($type)) {
+			$meta = safe_row('*', 'arc_meta', "type_id=$typeId AND type='$type'");
+			return array_merge($arc_meta, $meta);
+		}
+
+	}
+
+	return $arc_meta;
 
 }
 
