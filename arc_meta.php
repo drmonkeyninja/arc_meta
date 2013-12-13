@@ -140,7 +140,10 @@ if (@txpinterface == 'admin')
 	register_callback('_arc_meta_article_meta_save', 'article_posted');
 
 	register_callback('_arc_meta_section_meta', 'section_ui', 'extend_detail_form');
-	register_callback('_arc_meta_section_meta_save','section', 'section_save');
+	register_callback('_arc_meta_section_meta_save', 'section', 'section_save');
+
+	register_callback('_arc_meta_category_meta', 'category_ui', 'extend_detail_form');
+	register_callback('_arc_meta_category_meta_save', 'category', 'cat_article_save');
 }
 
 function _arc_meta_install()
@@ -204,6 +207,63 @@ function _arc_meta_section_meta($event, $step, $data, $rs)
 	return $data.$form;
 }
 
+function _arc_meta_category_meta($event, $step, $data, $rs)
+{
+	// Make sure that this is an article category (we don't support other
+	// category types).
+	if ($rs['type']!='article') {
+		return $data;
+	}
+
+	// Get the existing meta data for this category.
+	$meta = _arc_meta('category', $rs['name']);
+
+	$form = hInput('arc_meta_id', $meta['id']);
+	$form .= "<p class='edit-category-arc_meta_title'>";
+	$form .= "<span class='edit-label'> " . tag('Meta title', 'label', ' for="arc_meta_title"') . '</span>';
+	$form .= "<span class='edit-value'> " . fInput('text', 'arc_meta_title', $meta['title'], '', '', '', '32', '', 'arc_meta_title') . '</span>';
+	$form .= '</p>';
+	$form .= "<p class='edit-category-arc_meta_description'>";
+	$form .= "<span class='edit-label'> " . tag('Meta description', 'label', ' for="arc_meta_description"') . '</span>';
+	$form .= "<span class='edit-value'> " . text_area('arc_meta_description', null, null, $meta['description'], 'arc_meta_description') . '</span>';
+	$form .= '</p>';
+
+	return $data.$form;
+}
+
+function _arc_meta_article_meta_save($event, $step)
+{
+	$articleId = empty($GLOBALS['ID']) ? gps('ID') : $GLOBALS['ID'];
+
+	$metaId = gps('arc_meta_id');
+	$metaTitle = gps('arc_meta_title');
+	$metaDescription = gps('arc_meta_description');
+
+	$values = array(
+		'type' => 'article',
+		'type_id' => $articleId,
+		'title' => doSlash($metaTitle),
+		'description' => doSlash($metaDescription)
+	);
+
+	foreach ($values as $key => $value) {
+		$sql[] = "$key = '$value'";
+	}
+	$sql = implode(', ', $sql);
+
+	if ($metaId) {
+
+		// Update existing meta data.
+		safe_update('arc_meta', $sql, "id=$metaId");
+
+	} elseif (!empty($metaTitle) || !empty($metaDescription)) { 
+
+		// Create new meta data only if there is data to be saved.
+		safe_insert('arc_meta', $sql);
+
+	}
+}
+
 function _arc_meta_section_meta_save($event, $step)
 {
 	$sectionName = gps('name');
@@ -237,17 +297,17 @@ function _arc_meta_section_meta_save($event, $step)
 	}
 }
 
-function _arc_meta_article_meta_save($event, $step)
+function _arc_meta_category_meta_save($event, $step)
 {
-	$articleId = empty($GLOBALS['ID']) ? gps('ID') : $GLOBALS['ID'];
+	$categoryName = gps('name');
 
 	$metaId = gps('arc_meta_id');
 	$metaTitle = gps('arc_meta_title');
 	$metaDescription = gps('arc_meta_description');
 
 	$values = array(
-		'type' => 'article',
-		'type_id' => $articleId,
+		'type' => 'category',
+		'type_id' => $categoryName,
 		'title' => doSlash($metaTitle),
 		'description' => doSlash($metaDescription)
 	);
