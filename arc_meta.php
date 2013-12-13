@@ -41,13 +41,17 @@ function arc_meta_title($atts)
 			$tokens['_%q_'] = txpspecialchars($q);
 			$pattern = gTxt('search_results') . ': ' . '%q | %n';
 		} elseif ($c) {
-			$tokens['_%c_'] = txpspecialchars(fetch_category_title($c, $context));
+			$tokens['_%c_'] = empty($meta['title']) ? txpspecialchars(fetch_category_title($c, $context)) : $meta['title'];
 			$pattern = '%c | %n';
 		} elseif ($s and $s != 'default') {
-			$tokens['_%s_'] = txpspecialchars(fetch_section_title($s));
+			$tokens['_%s_'] = empty($meta['title']) ? txpspecialchars(fetch_section_title($s)) : $meta['title'];
 			$pattern = '%s | %n';
 		} else {
-			$pattern = '%n | %t';
+			if (!empty($meta['title'])) {
+				$pattern = $meta['title'];
+			} else {
+				$pattern = '%n | %t';
+			}
 		}
 
 		$title = preg_replace(array_keys($tokens), array_values($tokens), $pattern);
@@ -89,19 +93,25 @@ function arc_meta_description($atts)
 
 }
 
-function _arc_meta()
+function _arc_meta($type = null, $typeId = null)
 {
 	global $thisarticle, $s, $c, $arc_meta;
 
 	if (empty($arc_meta)) {
 
-		if (!empty($thisarticle['thisid'])) {
-			$typeId = $thisarticle['thisid'];
-			$type = 'article';
-		} elseif (!empty($c)) {
-			$type = 'category';
-		} elseif (!empty($s)) {
-			$type = 'section';
+		if (empty($type) || empty($typeId)) {
+
+			if (!empty($thisarticle['thisid'])) {
+				$typeId = $thisarticle['thisid'];
+				$type = 'article';
+			} elseif (!empty($c)) {
+				$typeId = $c;
+				$type = 'category';
+			} elseif (!empty($s)) {
+				$typeId = $s;
+				$type = 'section';
+			}
+
 		}
 		
 		$arc_meta = array(
@@ -111,7 +121,8 @@ function _arc_meta()
 		);
 
 		if (!empty($typeId) && !empty($type)) {
-			$meta = safe_row('*', 'arc_meta', "type_id=$typeId AND type='$type'");
+
+			$meta = safe_row('*', 'arc_meta', "type_id='$typeId' AND type='$type'");
 			return array_merge($arc_meta, $meta);
 		}
 
@@ -127,6 +138,9 @@ if (@txpinterface == 'admin')
 	register_callback('_arc_meta_article_meta_save', 'ping');
 	register_callback('_arc_meta_article_meta_save', 'article_saved');
 	register_callback('_arc_meta_article_meta_save', 'article_posted');
+
+	register_callback('_arc_meta_section_meta', 'section_ui', 'extend_detail_form');
+	register_callback('_arc_meta_section_meta_save','section', 'section_save');
 }
 
 function _arc_meta_install()
@@ -134,7 +148,7 @@ function _arc_meta_install()
 	$sql = "CREATE TABLE IF NOT EXISTS " . PFX . "arc_meta (
 		`id` int(11) NOT NULL AUTO_INCREMENT,
 		`type` varchar(8) NOT NULL,
-		`type_id` int(11) NOT NULL,
+		`type_id` varchar(128) NOT NULL,
 		`title` varchar(65) DEFAULT NULL,
 		`override_title` tinyint(1) DEFAULT NULL,
 		`description` varchar(150) DEFAULT NULL,
@@ -171,6 +185,56 @@ function _arc_meta_article_meta($event, $step, $data, $rs)
 	$form .= "</p>";
 
 	return $form.$data;
+}
+
+function _arc_meta_section_meta($event, $step, $data, $rs)
+{
+	$meta = _arc_meta('section', $rs['name']);
+
+	$form = hInput('arc_meta_id', $meta['id']);
+	$form .= "<p class='edit-section-arc_meta_title'>";
+	$form .= "<span class='edit-label'> " . tag('Meta title', 'label', ' for="arc_meta_title"') . '</span>';
+	$form .= "<span class='edit-value'> " . fInput('text', 'arc_meta_title', $meta['title'], '', '', '', '32', '', 'arc_meta_title') . '</span>';
+	$form .= '</p>';
+	$form .= "<p class='edit-section-arc_meta_description'>";
+	$form .= "<span class='edit-label'> " . tag('Meta description', 'label', ' for="arc_meta_description"') . '</span>';
+	$form .= "<span class='edit-value'> " . text_area('arc_meta_description', null, null, $meta['description'], 'arc_meta_description') . '</span>';
+	$form .= '</p>';
+
+	return $data.$form;
+}
+
+function _arc_meta_section_meta_save($event, $step)
+{
+	$sectionName = gps('name');
+
+	$metaId = gps('arc_meta_id');
+	$metaTitle = gps('arc_meta_title');
+	$metaDescription = gps('arc_meta_description');
+
+	$values = array(
+		'type' => 'section',
+		'type_id' => $sectionName,
+		'title' => doSlash($metaTitle),
+		'description' => doSlash($metaDescription)
+	);
+
+	foreach ($values as $key => $value) {
+		$sql[] = "$key = '$value'";
+	}
+	$sql = implode(', ', $sql);
+
+	if ($metaId) {
+
+		// Update existing meta data.
+		safe_update('arc_meta', $sql, "id=$metaId");
+
+	} elseif (!empty($metaTitle) || !empty($metaDescription)) { 
+
+		// Create new meta data only if there is data to be saved.
+		safe_insert('arc_meta', $sql);
+
+	}
 }
 
 function _arc_meta_article_meta_save($event, $step)
