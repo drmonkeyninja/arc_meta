@@ -167,15 +167,9 @@ function _arc_meta_install()
 
 function _arc_meta_article_meta($event, $step, $data, $rs)
 {
-	$meta = array(
-		'id' => null,
-		'title' => null,
-		'description' => null
-	);
-	if ($rs['ID']) {
-		$articleMeta = safe_row('*', 'arc_meta', "type_id={$rs['ID']} AND type='article'");
-		$meta = array_merge($meta, $articleMeta);
-	}
+	// Get the article meta data.
+	$articleId = !empty($rs['ID']) ? $rs['ID'] : null;
+	$meta = _arc_meta('article', $articleId);
 
 	$form = hInput('arc_meta_id', $meta['id']);
 	$form .= "<p class='arc_meta_title'>";
@@ -192,7 +186,9 @@ function _arc_meta_article_meta($event, $step, $data, $rs)
 
 function _arc_meta_section_meta($event, $step, $data, $rs)
 {
-	$meta = _arc_meta('section', $rs['name']);
+	// Get the section meta data.
+	$sectionName = !empty($rs['name']) ? $rs['name'] : null;
+	$meta = _arc_meta('section', $sectionName);
 
 	$form = hInput('arc_meta_id', $meta['id']);
 	$form .= "<p class='edit-section-arc_meta_title'>";
