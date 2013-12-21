@@ -162,6 +162,34 @@ function _arc_meta_install()
 		return 'Error - unable to create arc_meta table';
 	}
 
+	// Setup the plugin preferences.
+	_arc_meta_install_prefs();
+
+	return;
+}
+/**
+ * Setup the plugin preferences if they have not yet been set.
+ */
+function _arc_meta_install_prefs()
+{
+	if (!isset($prefs['arc_meta_article_title'])) {
+		set_pref('arc_meta_article_title', '%a | %n', 'arc_meta', 1, 'text_input');
+	}
+	if (!isset($prefs['arc_meta_comment_title'])) {
+		set_pref('arc_meta_comment_title', gTxt('comments_on').' %a | %n', 'arc_meta', 1, 'text_input');
+	}
+	if (!isset($prefs['arc_meta_search_title'])) {
+		set_pref('arc_meta_search_title', gTxt('search_results') . ': ' . '%q | %n', 'arc_meta', 1, 'text_input');
+	}
+	if (!isset($prefs['arc_meta_category_title'])) {
+		set_pref('arc_meta_category_title', '%c | %n', 'arc_meta', 1, 'text_input');
+	}
+	if (!isset($prefs['arc_meta_section_title'])) {
+		set_pref('arc_meta_section_title', '%s | %n', 'arc_meta', 1, 'text_input');
+	}
+	if (!isset($prefs['arc_meta_homepage_title'])) {
+		set_pref('arc_meta_homepage_title', '%n | %t', 'arc_meta', 1, 'text_input');
+	}
 	return;
 }
 
