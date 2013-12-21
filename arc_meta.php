@@ -22,7 +22,13 @@ function arc_meta_title($atts)
 
 	extract(lAtts(array(
 		'separator' => ' | ',
-		'title' => null
+		'title' => null,
+		'article_title' => $prefs['arc_meta_article_title'],
+		'comment_title' => $prefs['arc_meta_comment_title'],
+		'search_title' => $prefs['arc_meta_search_title'],
+		'category_title' => $prefs['arc_meta_category_title'],
+		'section_title' => $prefs['arc_meta_section_title'],
+		'homepage_title' => $prefs['arc_meta_homepage_title']
 	), $atts));
 	
 	if ($title===null) {
@@ -36,22 +42,19 @@ function arc_meta_title($atts)
 
 		if (!empty($parent_id) || !empty($thisarticle['title'])) {
 			$tokens['_%a_'] = empty($meta['title']) ? escape_title($thisarticle['title']) : $meta['title'];
-			$pattern = !empty($parent_id) ? gTxt('comments_on').' %a | %n' : '%a | %n';
+			$tokens['_%s_'] = txpspecialchars(fetch_section_title($thisarticle['section']));
+			$pattern = !empty($parent_id) ? $comment_title : $article_title;
 		} elseif ($q) {
 			$tokens['_%q_'] = txpspecialchars($q);
-			$pattern = gTxt('search_results') . ': ' . '%q | %n';
+			$pattern = $search_title;
 		} elseif ($c) {
 			$tokens['_%c_'] = empty($meta['title']) ? txpspecialchars(fetch_category_title($c, $context)) : $meta['title'];
-			$pattern = '%c | %n';
+			$pattern = $category_title;
 		} elseif ($s and $s != 'default') {
 			$tokens['_%s_'] = empty($meta['title']) ? txpspecialchars(fetch_section_title($s)) : $meta['title'];
-			$pattern = '%s | %n';
+			$pattern = $section_title;
 		} else {
-			if (!empty($meta['title'])) {
-				$pattern = $meta['title'];
-			} else {
-				$pattern = '%n | %t';
-			}
+			$pattern = !empty($meta['title']) ? $meta['title'] : $homepage_title;
 		}
 
 		$title = preg_replace(array_keys($tokens), array_values($tokens), $pattern);
