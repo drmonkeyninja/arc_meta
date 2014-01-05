@@ -217,9 +217,44 @@ function arc_meta_options($event, $step)
 {
 	global $prefs;
 
-	pagetop('arc_meta');
+	if ($step == 'prefs_save') {
+		pagetop('arc_meta', 'Preferences saved');
+	} else {
+		pagetop('arc_meta');
+	}
 
-	$html = '';
+	// Define the form fields.
+	$fields = array(
+		'arc_meta_article_title' => 'Article Page Titles',
+		'arc_meta_comment_title' => 'Comment Page Titles',
+		'arc_meta_search_title' => 'Search Page Titles',
+		'arc_meta_category_title' => 'Category Titles',		
+		'arc_meta_section_title' => 'Section Titles'
+	);
+
+	if ($step == 'prefs_save') {
+
+		foreach ($fields as $key => $label) {
+			$prefs[$key] = trim(gps($key));
+			set_pref($key, $prefs[$key]);
+		}
+
+	}
+
+	$form = '';
+
+	foreach ($fields as $key => $label) {
+		$form .= "<p class='$key'><span class='edit-label'><label for='$key'>$label</label></span>";
+		$form .= "<span class='edit-value'>" . fInput('text', $key, $prefs[$key], '', '', '', '', '', $key) . "</span>";
+		$form .= '</p>';
+	}
+
+	$form .= sInput('prefs_save').n.eInput('plugin_prefs.arc_meta');
+
+	$form .= '<p>'.fInput('submit', 'Submit', gTxt('save_button'), 'publish').'</p>';
+
+	$html = "<h1 class='txp-heading'>arc_meta</h1>";
+	$html .= form("<div class='plugin-column'>" . $form . "</div>", " class='edit-form'");
 
 	echo $html;
 }
