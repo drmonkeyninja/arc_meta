@@ -15,6 +15,9 @@ if (!defined('txpinterface'))
 global $prefs, $txpcfg;
 
 register_callback('_arc_meta_install','plugin_lifecycle.arc_meta', 'installed');
+register_callback('_arc_meta_uninstall','plugin_lifecycle.arc_meta', 'deleted');
+register_callback('arc_meta_options','plugin_prefs.arc_meta');
+add_privs('plugin_prefs.arc_meta', '1,2');
 
 function arc_meta_title($atts)
 {
@@ -194,6 +197,31 @@ function _arc_meta_install_prefs()
 		set_pref('arc_meta_homepage_title', '%n | %t', 'arc_meta', 1, 'text_input');
 	}
 	return;
+}
+
+function _arc_meta_uninstall()
+{
+	$sql = "DROP TABLE IF EXISTS ".PFX."arc_meta;";
+	if (!safe_query($sql)) {
+		return 'Error - unable to delete arc_meta table';
+	}
+
+	$sql = "DELETE FROM  ".PFX."txp_prefs WHERE event='arc_meta';";
+	if (!safe_query($sql)) {
+		return 'Error - unable to delete arc_meta preferences';
+	}
+	return;
+}
+
+function arc_meta_options($event, $step)
+{
+	global $prefs;
+
+	pagetop('arc_meta');
+
+	$html = '';
+
+	echo $html;
 }
 
 function _arc_meta_article_meta($event, $step, $data, $rs)
