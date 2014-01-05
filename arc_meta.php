@@ -15,6 +15,9 @@ if (!defined('txpinterface'))
 global $prefs, $txpcfg;
 
 register_callback('_arc_meta_install','plugin_lifecycle.arc_meta', 'installed');
+register_callback('_arc_meta_uninstall','plugin_lifecycle.arc_meta', 'deleted');
+register_callback('arc_meta_options','plugin_prefs.arc_meta');
+add_privs('plugin_prefs.arc_meta', '1,2');
 
 function arc_meta_title($atts)
 {
@@ -22,7 +25,13 @@ function arc_meta_title($atts)
 
 	extract(lAtts(array(
 		'separator' => ' | ',
-		'title' => null
+		'title' => null,
+		'article_title' => $prefs['arc_meta_article_title'],
+		'comment_title' => $prefs['arc_meta_comment_title'],
+		'search_title' => $prefs['arc_meta_search_title'],
+		'category_title' => $prefs['arc_meta_category_title'],
+		'section_title' => $prefs['arc_meta_section_title'],
+		'homepage_title' => $prefs['arc_meta_homepage_title']
 	), $atts));
 	
 	if ($title===null) {
@@ -36,22 +45,19 @@ function arc_meta_title($atts)
 
 		if (!empty($parent_id) || !empty($thisarticle['title'])) {
 			$tokens['_%a_'] = empty($meta['title']) ? escape_title($thisarticle['title']) : $meta['title'];
-			$pattern = !empty($parent_id) ? gTxt('comments_on').' %a | %n' : '%a | %n';
+			$tokens['_%s_'] = txpspecialchars(fetch_section_title($thisarticle['section']));
+			$pattern = !empty($parent_id) ? $comment_title : $article_title;
 		} elseif ($q) {
 			$tokens['_%q_'] = txpspecialchars($q);
-			$pattern = gTxt('search_results') . ': ' . '%q | %n';
+			$pattern = $search_title;
 		} elseif ($c) {
 			$tokens['_%c_'] = empty($meta['title']) ? txpspecialchars(fetch_category_title($c, $context)) : $meta['title'];
-			$pattern = '%c | %n';
+			$pattern = $category_title;
 		} elseif ($s and $s != 'default') {
 			$tokens['_%s_'] = empty($meta['title']) ? txpspecialchars(fetch_section_title($s)) : $meta['title'];
-			$pattern = '%s | %n';
+			$pattern = $section_title;
 		} else {
-			if (!empty($meta['title'])) {
-				$pattern = $meta['title'];
-			} else {
-				$pattern = '%n | %t';
-			}
+			$pattern = !empty($meta['title']) ? $meta['title'] : $homepage_title;
 		}
 
 		$title = preg_replace(array_keys($tokens), array_values($tokens), $pattern);
@@ -162,7 +168,95 @@ function _arc_meta_install()
 		return 'Error - unable to create arc_meta table';
 	}
 
+	// Setup the plugin preferences.
+	_arc_meta_install_prefs();
+
 	return;
+}
+/**
+ * Setup the plugin preferences if they have not yet been set.
+ */
+function _arc_meta_install_prefs()
+{
+	if (!isset($prefs['arc_meta_article_title'])) {
+		set_pref('arc_meta_article_title', '%a | %n', 'arc_meta', 1, 'text_input');
+	}
+	if (!isset($prefs['arc_meta_comment_title'])) {
+		set_pref('arc_meta_comment_title', gTxt('comments_on').' %a | %n', 'arc_meta', 1, 'text_input');
+	}
+	if (!isset($prefs['arc_meta_search_title'])) {
+		set_pref('arc_meta_search_title', gTxt('search_results') . ': ' . '%q | %n', 'arc_meta', 1, 'text_input');
+	}
+	if (!isset($prefs['arc_meta_category_title'])) {
+		set_pref('arc_meta_category_title', '%c | %n', 'arc_meta', 1, 'text_input');
+	}
+	if (!isset($prefs['arc_meta_section_title'])) {
+		set_pref('arc_meta_section_title', '%s | %n', 'arc_meta', 1, 'text_input');
+	}
+	if (!isset($prefs['arc_meta_homepage_title'])) {
+		set_pref('arc_meta_homepage_title', '%n | %t', 'arc_meta', 1, 'text_input');
+	}
+	return;
+}
+
+function _arc_meta_uninstall()
+{
+	$sql = "DROP TABLE IF EXISTS ".PFX."arc_meta;";
+	if (!safe_query($sql)) {
+		return 'Error - unable to delete arc_meta table';
+	}
+
+	$sql = "DELETE FROM  ".PFX."txp_prefs WHERE event='arc_meta';";
+	if (!safe_query($sql)) {
+		return 'Error - unable to delete arc_meta preferences';
+	}
+	return;
+}
+
+function arc_meta_options($event, $step)
+{
+	global $prefs;
+
+	if ($step == 'prefs_save') {
+		pagetop('arc_meta', 'Preferences saved');
+	} else {
+		pagetop('arc_meta');
+	}
+
+	// Define the form fields.
+	$fields = array(
+		'arc_meta_article_title' => 'Article Page Titles',
+		'arc_meta_comment_title' => 'Comment Page Titles',
+		'arc_meta_search_title' => 'Search Page Titles',
+		'arc_meta_category_title' => 'Category Titles',		
+		'arc_meta_section_title' => 'Section Titles'
+	);
+
+	if ($step == 'prefs_save') {
+
+		foreach ($fields as $key => $label) {
+			$prefs[$key] = trim(gps($key));
+			set_pref($key, $prefs[$key]);
+		}
+
+	}
+
+	$form = '';
+
+	foreach ($fields as $key => $label) {
+		$form .= "<p class='$key'><span class='edit-label'><label for='$key'>$label</label></span>";
+		$form .= "<span class='edit-value'>" . fInput('text', $key, $prefs[$key], '', '', '', '', '', $key) . "</span>";
+		$form .= '</p>';
+	}
+
+	$form .= sInput('prefs_save').n.eInput('plugin_prefs.arc_meta');
+
+	$form .= '<p>'.fInput('submit', 'Submit', gTxt('save_button'), 'publish').'</p>';
+
+	$html = "<h1 class='txp-heading'>arc_meta</h1>";
+	$html .= form("<div class='plugin-column'>" . $form . "</div>", " class='edit-form'");
+
+	echo $html;
 }
 
 function _arc_meta_article_meta($event, $step, $data, $rs)
