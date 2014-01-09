@@ -99,6 +99,31 @@ function arc_meta_description($atts)
 
 }
 
+function arc_meta_open_graph($atts)
+{
+	global $thisarticle, $prefs, $s;
+
+	$meta = _arc_meta();
+
+	if (!empty($thisarticle['thisid'])) {
+		$title = $thisarticle['title'];
+		$url = permlinkurl($thisarticle);
+	} elseif (!empty($s) and $s != 'default') {
+		$title = '';
+		$url = pagelinkurl(array('s' => $s));
+	} else {
+		$title = $prefs['sitename'];
+		$url = hu;
+	}	
+
+	$html = "<meta property='og:site_name' content='{$prefs['sitename']}' />";
+	$html .= "<meta property='og:title' content='$title' />";
+	$html .= "<meta property='og:description' content='$description' />";
+	$html .= "<meta property='og:url' href='$url' />";
+
+	return $html;
+}
+
 function _arc_meta($type = null, $typeId = null)
 {
 	global $thisarticle, $s, $c, $arc_meta;
