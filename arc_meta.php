@@ -73,13 +73,7 @@ function arc_meta_canonical($atts)
 {
 	global $thisarticle, $prefs, $s;
 
-	if (!empty($thisarticle['thisid'])) {
-		$url = permlinkurl($thisarticle);
-	} elseif (!empty($s) and $s != 'default') {
-		$url = pagelinkurl(array('s' => $s));
-	} else {
-		$url = hu;
-	}
+	$url = _arc_meta_url();
 
 	$html = "<link rel='canonical' href='$url' />";
 
