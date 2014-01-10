@@ -91,34 +91,43 @@ function arc_meta_description($atts)
 {
 	$meta = _arc_meta();
 
-	$description = urlencode($meta['description']);
+	$description = !empty($meta['description']) ? addslashes(txpspecialchars($meta['description'])) : null;
 
-	$html = "<meta name='description' content='$description' />";
+	if ($description) {
+		return "<meta property='og:description' content='{$meta['description']}' />";		
+	}
 
-	return $html;
+	return '';
 
 }
 
 function arc_meta_open_graph($atts)
 {
-	global $thisarticle, $prefs, $s;
+	global $thisarticle, $prefs, $s, $c;
 
 	$meta = _arc_meta();
 
 	if (!empty($thisarticle['thisid'])) {
-		$title = $thisarticle['title'];
+		$title = addslashes(txpspecialchars($thisarticle['title']));
 		$url = permlinkurl($thisarticle);
 	} elseif (!empty($s) and $s != 'default') {
-		$title = '';
+		$title = addslashes(txpspecialchars(fetch_section_title($s)));
 		$url = pagelinkurl(array('s' => $s));
+	} elseif (!empty($c)) {
+		$title = addslashes(txpspecialchars(fetch_category_title($c)));
+		$url = pagelinkurl(array('c' => $c));
 	} else {
-		$title = $prefs['sitename'];
+		$title = addslashes(txpspecialchars($prefs['sitename']));
 		$url = hu;
-	}	
+	}
+
+	$description = !empty($meta['description']) ? addslashes(txpspecialchars($meta['description'])) : null;
 
 	$html = "<meta property='og:site_name' content='{$prefs['sitename']}' />";
 	$html .= "<meta property='og:title' content='$title' />";
-	$html .= "<meta property='og:description' content='$description' />";
+	if ($description) {
+		$html .= "<meta property='og:description' content='{$meta['description']}' />";		
+	}
 	$html .= "<meta property='og:url' href='$url' />";
 
 	return $html;
@@ -154,7 +163,8 @@ function _arc_meta($type = null, $typeId = null)
 		if (!empty($typeId) && !empty($type)) {
 
 			$meta = safe_row('*', 'arc_meta', "type_id='$typeId' AND type='$type'");
-			return array_merge($arc_meta, $meta);
+			$arc_meta = array_merge($arc_meta, $meta);
+			return $arc_meta;
 		}
 
 	}
