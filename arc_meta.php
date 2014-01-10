@@ -105,30 +105,62 @@ function arc_meta_open_graph($atts)
 {
 	global $thisarticle, $prefs, $s, $c;
 
+	extract(lAtts(array(
+		'site_name' => $prefs['sitename'],
+		'title' => null,
+		'description' => null,
+		'url' => null
+	), $atts));
+
 	$meta = _arc_meta();
 
-	if (!empty($thisarticle['thisid'])) {
-		$title = addslashes(txpspecialchars($thisarticle['title']));
-		$url = permlinkurl($thisarticle);
-	} elseif (!empty($s) and $s != 'default') {
-		$title = addslashes(txpspecialchars(fetch_section_title($s)));
-		$url = pagelinkurl(array('s' => $s));
-	} elseif (!empty($c)) {
-		$title = addslashes(txpspecialchars(fetch_category_title($c)));
-		$url = pagelinkurl(array('c' => $c));
-	} else {
-		$title = addslashes(txpspecialchars($prefs['sitename']));
-		$url = hu;
+	if ($title===null) {
+
+		if (!empty($thisarticle['thisid'])) {
+			$title = addslashes(txpspecialchars($thisarticle['title']));
+		} elseif (!empty($s) and $s != 'default') {
+			$title = addslashes(txpspecialchars(fetch_section_title($s)));
+		} elseif (!empty($c)) {
+			$title = addslashes(txpspecialchars(fetch_category_title($c)));
+		} else {
+			$title = addslashes(txpspecialchars($prefs['sitename']));
+		}
+	
 	}
 
-	$description = !empty($meta['description']) ? addslashes(txpspecialchars($meta['description'])) : null;
+	if ($description===null) {
 
-	$html = "<meta property='og:site_name' content='{$prefs['sitename']}' />";
-	$html .= "<meta property='og:title' content='$title' />";
+		$description = !empty($meta['description']) ? addslashes(txpspecialchars($meta['description'])) : null;
+	
+	}
+
+	if ($url===null) {
+
+		if (!empty($thisarticle['thisid'])) {
+			$url = permlinkurl($thisarticle);
+		} elseif (!empty($s) and $s != 'default') {
+			$url = pagelinkurl(array('s' => $s));
+		} elseif (!empty($c)) {
+			$url = pagelinkurl(array('c' => $c));
+		} else {
+			$url = hu;
+		}
+	
+	}
+
+	$html = '';
+	if ($site_name) {
+		$html .= "<meta property='og:site_name' content='$site_name' />";
+	}
+	if ($title)	{
+		$html .= "<meta property='og:title' content='$title' />";
+	}
 	if ($description) {
 		$html .= "<meta property='og:description' content='{$meta['description']}' />";		
 	}
-	$html .= "<meta property='og:url' href='$url' />";
+	if ($url) {
+		$html .= "<meta property='og:url' href='$url' />";
+	}
 
 	return $html;
 }
