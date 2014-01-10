@@ -113,21 +113,9 @@ function arc_meta_open_graph($atts)
 		'image' => null
 	), $atts));
 
+	$title = $title===null ? _arc_meta_title() : $title;
+
 	$meta = _arc_meta();
-
-	if ($title===null) {
-
-		if (!empty($thisarticle['thisid'])) {
-			$title = addslashes(txpspecialchars($thisarticle['title']));
-		} elseif (!empty($s) and $s != 'default') {
-			$title = addslashes(txpspecialchars(fetch_section_title($s)));
-		} elseif (!empty($c)) {
-			$title = addslashes(txpspecialchars(fetch_category_title($c)));
-		} else {
-			$title = addslashes(txpspecialchars($prefs['sitename']));
-		}
-	
-	}
 
 	if ($description===null) {
 
@@ -135,33 +123,11 @@ function arc_meta_open_graph($atts)
 	
 	}
 
-	if ($url===null) {
-
-		if (!empty($thisarticle['thisid'])) {
-			$url = permlinkurl($thisarticle);
-		} elseif (!empty($s) and $s != 'default') {
-			$url = pagelinkurl(array('s' => $s));
-		} elseif (!empty($c)) {
-			$url = pagelinkurl(array('c' => $c));
-		} else {
-			$url = hu;
-		}
-	
-	}
+	$url = $url===null ? _arc_meta_url() : $url;
 
 	if ($image===null && $thisarticle['article_image']) {
 
-		$image = $thisarticle['article_image'];
-
-		if (intval($image)) {
-
-			if ($rs = safe_row('*', 'txp_image', 'id = ' . intval($image))) {
-				$image = imagesrcurl($rs['id'], $rs['ext']);
-			} else {
-				$image = null;
-			}
-
-		}
+		$image = _arc_meta_image();
 
 	}
 
@@ -173,16 +139,118 @@ function arc_meta_open_graph($atts)
 		$html .= "<meta property='og:title' content='$title' />";
 	}
 	if ($description) {
-		$html .= "<meta property='og:description' content='{$meta['description']}' />";		
+		$html .= "<meta property='og:description' content='$description' />";		
 	}
 	if ($url) {
-		$html .= "<meta property='og:url' href='$url' />";
+		$html .= "<meta property='og:url' content='$url' />";
 	}
 	if ($image) {
-		$html .= "<meta property='og:image' href='$image' />";
+		$html .= "<meta property='og:image' content='$image' />";
 	}
 
 	return $html;
+}
+
+function arc_meta_twitter_card($atts)
+{
+	global $thisarticle, $prefs, $s, $c;
+
+	extract(lAtts(array(
+		'card' => 'summary',
+		'title' => null,
+		'description' => null,
+		'url' => null,
+		'image' => null
+	), $atts));
+
+	$title = $title===null ? _arc_meta_title() : $title;
+
+	$meta = _arc_meta();
+
+	if ($description===null) {
+
+		$description = !empty($meta['description']) ? addslashes(txpspecialchars($meta['description'])) : null;
+	
+	}
+
+	$url = $url===null ? _arc_meta_url() : $url;
+
+	if ($image===null && $thisarticle['article_image']) {
+
+		$image = _arc_meta_image();
+
+	}
+
+	$html = "<meta name='twitter:card' content='$card' />";
+
+	if ($title) {
+		$html .= "<meta name='twitter:title' content='$title' />";		
+	}
+	if ($description) {
+		$html .= "<meta name='twitter:description' content='$description' />";		
+	}
+	if ($url) {
+		$html .= "<meta name='twitter:url' content='$url' />";
+	}
+	if ($image) {
+		$html .= "<meta name='twitter:image' content='$image' />";
+	}
+
+	return $html;
+
+}
+
+function _arc_meta_title()
+{
+	global $thisarticle, $prefs, $s, $c;
+
+	if (!empty($thisarticle['thisid'])) {
+		$title = addslashes(txpspecialchars($thisarticle['title']));
+	} elseif (!empty($s) and $s != 'default') {
+		$title = addslashes(txpspecialchars(fetch_section_title($s)));
+	} elseif (!empty($c)) {
+		$title = addslashes(txpspecialchars(fetch_category_title($c)));
+	} else {
+		$title = addslashes(txpspecialchars($prefs['sitename']));
+	}
+
+	return $title;
+
+}
+
+function _arc_meta_url()
+{
+	global $thisarticle, $s, $c;
+
+	if (!empty($thisarticle['thisid'])) {
+		$url = permlinkurl($thisarticle);
+	} elseif (!empty($s) and $s != 'default') {
+		$url = pagelinkurl(array('s' => $s));
+	} elseif (!empty($c)) {
+		$url = pagelinkurl(array('c' => $c));
+	} else {
+		$url = hu;
+	}
+	return $url;
+}
+
+function _arc_meta_image()
+{
+	global $thisarticle;
+
+	$image = $thisarticle['article_image'];
+
+	if (intval($image)) {
+
+		if ($rs = safe_row('*', 'txp_image', 'id = ' . intval($image))) {
+			$image = imagesrcurl($rs['id'], $rs['ext']);
+		} else {
+			$image = null;
+		}
+
+	}
+
+	return $image;
 }
 
 function _arc_meta($type = null, $typeId = null)
