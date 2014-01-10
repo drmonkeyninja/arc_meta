@@ -109,7 +109,8 @@ function arc_meta_open_graph($atts)
 		'site_name' => $prefs['sitename'],
 		'title' => null,
 		'description' => null,
-		'url' => null
+		'url' => null,
+		'image' => null
 	), $atts));
 
 	$meta = _arc_meta();
@@ -148,6 +149,22 @@ function arc_meta_open_graph($atts)
 	
 	}
 
+	if ($image===null && $thisarticle['article_image']) {
+
+		$image = $thisarticle['article_image'];
+
+		if (intval($image)) {
+
+			if ($rs = safe_row('*', 'txp_image', 'id = ' . intval($image))) {
+				$image = imagesrcurl($rs['id'], $rs['ext']);
+			} else {
+				$image = null;
+			}
+
+		}
+
+	}
+
 	$html = '';
 	if ($site_name) {
 		$html .= "<meta property='og:site_name' content='$site_name' />";
@@ -160,6 +177,9 @@ function arc_meta_open_graph($atts)
 	}
 	if ($url) {
 		$html .= "<meta property='og:url' href='$url' />";
+	}
+	if ($image) {
+		$html .= "<meta property='og:image' href='$image' />";
 	}
 
 	return $html;
