@@ -579,19 +579,138 @@ h1. arc_meta
 
 h2. Usage
 
-All of the following tags should be used within your templates' @<head>@ tags.
+All of the following tags should be used within your templates' @<head>@ tag.
 
 h3. arc_meta_title
 
-Outputs a SEO friendly @<title>@ tag.
+Outputs an SEO friendly @<title>@ tag.
 
 bc. <txp:arc_meta_title />
+
+h4. Attributes
+
+The @arc_meta_title@ tag attributes override the defaults. To set the default patterns used for the @<title>@ tag goto the plugin's options page.
+
+* title -- use this to override the title tag's content
+* article_title -- sets the pattern for article page titles
+* comment_title -- sets the pattern for comment page titles
+* search_title -- sets the pattern for search results page titles
+* category_title -- sets the pattern for category page titles
+* section_title -- sets the pattern for section page titles
+* homepage_title -- sets the pattern for the homepage title
+
+h4. Title Tokens
+
+To set a pattern for a page title you can use the following tokens:-
+
+* @%a@ -- article title, can only be used on article and comment pages
+* @%s@ -- section name, can be used on article and section pages
+* @%c@ -- category name, can be used on category pages (not including filtered section pages)
+* @%n@ -- site's name, can be used on all pages
+* @%t@ -- site's slogan, can be used on all pages
+* @%q@ -- search query, can be used on search results page
+
+For example, you could define the pattern for an article page as:-
+
+bc. %a | %n (%t)
+
+This would output something like:-
+
+bc. <title>Welcome to Your Site! | My site (My pithy slogan)</title>
+
+h4. Examples
+
+h5. Example Using the @section_title@ Attribute
+
+bc. <txp:arc_meta_title section_title='%n / %s' />
+
+Outputs on an 'Articles' section page:-
+
+bc. <title>My site / Articles</title>
+
+h5. Example Using the @title@ Attribute
+
+bc. <txp:arc_meta_title title='Hello World' />
+
+Outputs:-
+
+bc. <title>Hello World</title>
 
 h3. arc_meta_canonical
 
 Specify the page's canonical URL. See Google's "Specify Your Canonical":http://googlewebmastercentral.blogspot.com/2009/02/specify-your-canonical.html for an explanation.
 
 bc. <txp:arc_meta_canonical />
+
+h3. arc_meta_open_graph
+
+Outputs meta tags for using Facebook Open Graph.
+
+bc. <txp:arc_meta_open_graph />
+
+Just including the above tag in your templates' @<head>@ tag will output tags for the following:-
+
+* og:site_name -- your site name from your preferences
+* og:title -- the article's title, section name or category name
+* og:description -- your page's meta description
+* og:url -- your page's canonical URL
+* og:image -- the article's image
+
+You can override the default values of any of these by passing a value to one of the tag's attributes defined below. To disable one of the tags just pass an empty attribute value (__e.g.__ @title=''@).
+
+h4. Attributes
+
+* site_name
+* title
+* description
+* url
+* image
+
+h3. arc_meta_twitter_card
+
+Outputs meta tags for using Twitter Cards.
+
+bc. <txp:arc_meta_open_graph />
+
+Just including the above tag in your templates' @<head>@ tag will output tags for the following:-
+
+* twitter:card -- 'summary' by default, can also be set to 'photo' for image content or 'player' for videos
+* twitter:title -- the article's title, section name or category name
+* twitter:description -- your page's meta description
+* twitter:url -- your page's canonical URL
+* twitter:image -- the article's image
+
+You can override the default values of any of these by passing a value to one of the tag's attributes defined below. To disable one of the tags just pass an empty attribute value (__e.g.__ @title=''@).
+
+h4. Attributes
+
+* card
+* title
+* description
+* url
+* image
+
+h2. Admin
+
+h3. Article Write Page
+
+The plugin will add _title_ and _description_ fields to the _Meta_ options. Use these to set your article's meta data.
+
+If you set a title here it will be used in place of the article's title when replacing the @%a@ token for the @arc_meta_title@ tag.
+
+The description will be used for the @arc_meta_description@ tag and for the descriptions used by the @arc_meta_open_graph@ and @arc_meta_twitter_card@ tags.
+
+h3. Section and Category Pages
+
+The plugin will add _meta title_ and _meta description_ fields to the section and category edit forms.
+
+If you set a title here it will be used in place of the section's/category's name when replacing the ==<code>%s</code>/<code>%c</code>== token for the @arc_meta_title@ tag. When editing the homepage section the _meta title_ will replace any pattern defined for the page title.
+
+The description will be used for the @arc_meta_description@ tag and for the descriptions used by the @arc_meta_open_graph@ and @arc_meta_twitter_card@ tags.
+
+h3. Plugin Options
+
+From the plugin's options page you can set the default patterns used for the arc_meta_title tag. These can all be overridden when the tag is included in your page templates, but it may be easier to set the default patterns if you want to change the ones that come with the plugin when installed.
 
 # --- END PLUGIN HELP ---
 -->
