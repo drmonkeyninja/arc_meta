@@ -95,7 +95,7 @@ function arc_meta_description($atts)
 	}
 
 	if ($description) {
-		return "<meta property='og:description' content='{$meta['description']}' />";		
+		return "<meta name='description' content='{$meta['description']}' />";		
 	}
 
 	return '';
