@@ -91,11 +91,11 @@ function arc_meta_description($atts)
 
 	if ($description===null) {
 		$meta = _arc_meta();
-		$description = !empty($meta['description']) ? addslashes(txpspecialchars($meta['description'])) : null;
+		$description = !empty($meta['description']) ? txpspecialchars($meta['description'], ENT_QUOTES) : null;
 	}
 
 	if ($description) {
-		return "<meta name='description' content='{$meta['description']}' />";		
+		return "<meta name='description' content='$description' />";		
 	}
 
 	return '';
@@ -120,7 +120,7 @@ function arc_meta_open_graph($atts)
 
 	if ($description===null) {
 
-		$description = !empty($meta['description']) ? addslashes(txpspecialchars($meta['description'])) : null;
+		$description = !empty($meta['description']) ? txpspecialchars($meta['description']) : null;
 	
 	}
 
@@ -170,7 +170,7 @@ function arc_meta_twitter_card($atts)
 
 	if ($description===null) {
 
-		$description = !empty($meta['description']) ? addslashes(txpspecialchars($meta['description'])) : null;
+		$description = !empty($meta['description']) ? txpspecialchars($meta['description']) : null;
 	
 	}
 
@@ -206,13 +206,13 @@ function _arc_meta_title()
 	global $thisarticle, $prefs, $s, $c;
 
 	if (!empty($thisarticle['thisid'])) {
-		$title = addslashes(txpspecialchars($thisarticle['title']));
+		$title = txpspecialchars($thisarticle['title']);
 	} elseif (!empty($s) and $s != 'default') {
-		$title = addslashes(txpspecialchars(fetch_section_title($s)));
+		$title = txpspecialchars(fetch_section_title($s));
 	} elseif (!empty($c)) {
-		$title = addslashes(txpspecialchars(fetch_category_title($c)));
+		$title = txpspecialchars(fetch_category_title($c));
 	} else {
-		$title = addslashes(txpspecialchars($prefs['sitename']));
+		$title = txpspecialchars($prefs['sitename']);
 	}
 
 	return $title;
