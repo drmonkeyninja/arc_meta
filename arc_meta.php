@@ -71,9 +71,11 @@ function arc_meta_title($atts)
 
 function arc_meta_canonical($atts)
 {
-	global $thisarticle, $prefs, $s;
+	extract(lAtts(array(
+		'url' => null
+	), $atts));
 
-	$url = _arc_meta_url();
+	$url = $url !==null ? $url : _arc_meta_url();
 
 	$html = "<link rel='canonical' href='$url' />";
 
@@ -656,6 +658,10 @@ h3. arc_meta_canonical
 Specify the page's canonical URL. See Google's "Specify Your Canonical":http://googlewebmastercentral.blogspot.com/2009/02/specify-your-canonical.html for an explanation.
 
 bc. <txp:arc_meta_canonical />
+
+h4. Attributes
+
+* url -- overrides the default URL
 
 h3. arc_meta_open_graph
 
