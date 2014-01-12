@@ -83,9 +83,14 @@ function arc_meta_canonical($atts)
 
 function arc_meta_description($atts)
 {
-	$meta = _arc_meta();
+	extract(lAtts(array(
+		'description' => null
+	), $atts));
 
-	$description = !empty($meta['description']) ? addslashes(txpspecialchars($meta['description'])) : null;
+	if ($description===null) {
+		$meta = _arc_meta();
+		$description = !empty($meta['description']) ? addslashes(txpspecialchars($meta['description'])) : null;
+	}
 
 	if ($description) {
 		return "<meta property='og:description' content='{$meta['description']}' />";		
@@ -635,6 +640,16 @@ bc. <txp:arc_meta_title title='Hello World' />
 Outputs:-
 
 bc. <title>Hello World</title>
+
+h3. arc_meta_description
+
+Outputs a meta description tag when a description has been set.
+
+bc. <txp:arc_meta_description />
+
+h4. Attributes
+
+* description -- overrides the description set using arc_meta's description field on the article Write page or section/category edit page
 
 h3. arc_meta_canonical
 
