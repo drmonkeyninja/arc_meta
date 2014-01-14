@@ -165,15 +165,7 @@ function arc_meta_twitter_card($atts)
 	), $atts));
 
 	$title = $title===null ? _arc_meta_title() : $title;
-
-	$meta = _arc_meta();
-
-	if ($description===null) {
-
-		$description = !empty($meta['description']) ? txpspecialchars($meta['description']) : null;
-	
-	}
-
+	$description = $description===null ? _arc_meta_description() : $description;
 	$url = $url===null ? _arc_meta_url() : $url;
 
 	if ($image===null && $thisarticle['article_image']) {
@@ -183,18 +175,14 @@ function arc_meta_twitter_card($atts)
 	}
 
 	$html = "<meta name='twitter:card' content='$card' />";
+	$html .= "<meta name='twitter:title' content='$title' />";		
+	$html .= "<meta name='twitter:description' content='$description' />";		
 
-	if ($title) {
-		$html .= "<meta name='twitter:title' content='$title' />";		
-	}
-	if ($description) {
-		$html .= "<meta name='twitter:description' content='$description' />";		
-	}
 	if ($url) {
 		$html .= "<meta name='twitter:url' content='$url' />";
 	}
 	if ($image) {
-		$html .= "<meta name='twitter:image' content='$image' />";
+		$html .= "<meta name='twitter:image:src' content='$image' />";
 	}
 
 	return $html;
@@ -252,6 +240,25 @@ function _arc_meta_image()
 	}
 
 	return $image;
+}
+
+function _arc_meta_description()
+{
+	global $thisarticle;
+
+	$meta = _arc_meta();
+
+	if (!empty($meta['description'])) {
+		$description = txpspecialchars($meta['description']);
+	} elseif (!empty($thisarticle['body'])) {
+		$description = strip_tags($thisarticle['body']);
+		$description = substr($description, 0, 200);
+		$description = txpspecialchars($description);
+	} else {
+		$description = null;
+	}
+
+	return $description;
 }
 
 function _arc_meta($type = null, $typeId = null)
