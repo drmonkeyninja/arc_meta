@@ -698,7 +698,7 @@ h3. arc_meta_twitter_card
 
 Outputs meta tags for using Twitter Cards.
 
-bc. <txp:arc_meta_open_graph />
+bc. <txp:arc_meta_twitter_card />
 
 Just including the above tag in your templates' @<head>@ tag will output tags for the following:-
 
@@ -708,7 +708,9 @@ Just including the above tag in your templates' @<head>@ tag will output tags fo
 * twitter:url -- your page's canonical URL
 * twitter:image -- the article's image
 
-You can override the default values of any of these by passing a value to one of the tag's attributes defined below. To disable one of the tags just pass an empty attribute value (__e.g.__ @title=''@).
+You can override the default values of any of these by passing a value to one of the tag's attributes defined below.
+
+To start using Twitter cards you will need to authorise them for your domain by "validating and applying":https://dev.twitter.com/docs/cards/validation/validator on the Twitter website. You will need to supply Twitter with a few details including the URL of a page with a complete Twitter card. It can take several days for Twitter to authorise your site.
 
 h4. Attributes
 
