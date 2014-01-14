@@ -1,6 +1,6 @@
 <?php
 $plugin['name'] = 'arc_meta';
-$plugin['version'] = '1.1.1';
+$plugin['version'] = '1.1.2';
 $plugin['author'] = 'Andy Carter';
 $plugin['author_uri'] = 'http://andy-carter.com/';
 $plugin['description'] = 'Title and Meta tags';
@@ -165,15 +165,7 @@ function arc_meta_twitter_card($atts)
 	), $atts));
 
 	$title = $title===null ? _arc_meta_title() : $title;
-
-	$meta = _arc_meta();
-
-	if ($description===null) {
-
-		$description = !empty($meta['description']) ? txpspecialchars($meta['description']) : null;
-	
-	}
-
+	$description = $description===null ? _arc_meta_description() : $description;
 	$url = $url===null ? _arc_meta_url() : $url;
 
 	if ($image===null && $thisarticle['article_image']) {
@@ -183,18 +175,14 @@ function arc_meta_twitter_card($atts)
 	}
 
 	$html = "<meta name='twitter:card' content='$card' />";
+	$html .= "<meta name='twitter:title' content='$title' />";		
+	$html .= "<meta name='twitter:description' content='$description' />";		
 
-	if ($title) {
-		$html .= "<meta name='twitter:title' content='$title' />";		
-	}
-	if ($description) {
-		$html .= "<meta name='twitter:description' content='$description' />";		
-	}
 	if ($url) {
 		$html .= "<meta name='twitter:url' content='$url' />";
 	}
 	if ($image) {
-		$html .= "<meta name='twitter:image' content='$image' />";
+		$html .= "<meta name='twitter:image:src' content='$image' />";
 	}
 
 	return $html;
@@ -252,6 +240,25 @@ function _arc_meta_image()
 	}
 
 	return $image;
+}
+
+function _arc_meta_description()
+{
+	global $thisarticle;
+
+	$meta = _arc_meta();
+
+	if (!empty($meta['description'])) {
+		$description = txpspecialchars($meta['description']);
+	} elseif (!empty($thisarticle['body'])) {
+		$description = strip_tags($thisarticle['body']);
+		$description = substr($description, 0, 200);
+		$description = txpspecialchars($description);
+	} else {
+		$description = null;
+	}
+
+	return $description;
 }
 
 function _arc_meta($type = null, $typeId = null)
@@ -691,7 +698,7 @@ h3. arc_meta_twitter_card
 
 Outputs meta tags for using Twitter Cards.
 
-bc. <txp:arc_meta_open_graph />
+bc. <txp:arc_meta_twitter_card />
 
 Just including the above tag in your templates' @<head>@ tag will output tags for the following:-
 
@@ -701,7 +708,9 @@ Just including the above tag in your templates' @<head>@ tag will output tags fo
 * twitter:url -- your page's canonical URL
 * twitter:image -- the article's image
 
-You can override the default values of any of these by passing a value to one of the tag's attributes defined below. To disable one of the tags just pass an empty attribute value (__e.g.__ @title=''@).
+You can override the default values of any of these by passing a value to one of the tag's attributes defined below.
+
+To start using Twitter cards you will need to authorise them for your domain by "validating and applying":https://dev.twitter.com/docs/cards/validation/validator on the Twitter website. You will need to supply Twitter with a few details including the URL of a page with a complete Twitter card. It can take several days for Twitter to authorise your site.
 
 h4. Attributes
 
