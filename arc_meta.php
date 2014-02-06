@@ -107,8 +107,10 @@ function arc_meta_keywords($atts)
 	global $thisarticle;
 
 	extract(lAtts(array(
-		'keywords' => $thisarticle['keywords']
+		'keywords' => null
 	), $atts));
+
+	$keywords = $keywords===null && isset($thisarticle['keywords']) ? $thisarticle['keywords'] : null;
 
 	if ($keywords) {
 		$keywords = txpspecialchars($keywords);
