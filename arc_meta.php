@@ -102,6 +102,23 @@ function arc_meta_description($atts)
 
 }
 
+function arc_meta_keywords($atts)
+{
+	global $thisarticle;
+
+	extract(lAtts(array(
+		'keywords' => $thisarticle['keywords']
+	), $atts));
+
+	if ($keywords) {
+		$keywords = txpspecialchars($keywords);
+		return "<meta name='keywords' content='$keywords' />";		
+	}
+
+	return '';
+
+}
+
 function arc_meta_open_graph($atts)
 {
 	global $thisarticle, $prefs, $s, $c;
@@ -659,6 +676,16 @@ bc. <txp:arc_meta_description />
 h4. Attributes
 
 * description -- overrides the description set using arc_meta's description field on the article Write page or section/category edit page
+
+h3. arc_meta_keywords
+
+Outputs a meta keywords tag when keywords have been set (only works for articles).
+
+bc. <txp:arc_meta_keywords />
+
+h4. Attributes
+
+* keywords -- overrides the keywords set using the meta keywords field on the article Write page
 
 h3. arc_meta_canonical
 
