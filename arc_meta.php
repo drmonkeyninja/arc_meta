@@ -449,11 +449,11 @@ function _arc_meta_article_meta($event, $step, $data, $rs)
 
 	$form = hInput('arc_meta_id', $meta['id']);
 	$form .= "<p class='arc_meta_title'>";
-	$form .= tag('Title', 'label', ' for="arc_meta_title"') . '<br />';
+	$form .= tag('Meta title', 'label', ' for="arc_meta_title"') . '<br />';
 	$form .= fInput('text', 'arc_meta_title', $meta['title'], '', '', '', '32', '', 'arc_meta_title');
 	$form .= "</p>";
 	$form .= "<p class='arc_meta_description'>";
-	$form .= tag('Description', 'label', ' for="arc_meta_description"') . '<br />';
+	$form .= tag('Meta description', 'label', ' for="arc_meta_description"') . '<br />';
 	$form .= text_area('arc_meta_description', null, null, $meta['description'], 'arc_meta_description');
 	$form .= "</p>";
 
