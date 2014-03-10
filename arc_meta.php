@@ -113,11 +113,16 @@ function arc_meta_robots($atts)
 		$robots = !empty($meta['robots']) ? $meta['robots'] : null;
 	}
 
-	if ($robots) {
-		return "<meta name='robots' content='$robots' />";		
+	$out = '';
+
+	if (get_pref('production_status')!='live') {
+		$out .= "<meta name='robots' content='noindex, nofollow' />";
+		$out .= $robots ? "<!-- $robots -->" : null;
+	} elseif ($robots) {
+		$out .= "<meta name='robots' content='$robots' />";
 	}
 
-	return '';
+	return $out;
 
 }
 
