@@ -344,6 +344,7 @@ function _arc_meta_install()
 		`title` varchar(65) DEFAULT NULL,
 		`override_title` tinyint(1) DEFAULT NULL,
 		`description` varchar(150) DEFAULT NULL,
+		`robots` varchar(45) DEFAULT NULL,
 		PRIMARY KEY (`id`)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;";
 
