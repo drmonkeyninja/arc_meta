@@ -737,6 +737,16 @@ h4. Attributes
 
 * description -- overrides the description set using arc_meta's description field on the article Write page or section/category edit page
 
+h3. arc_meta_robots
+
+Outputs a meta robots tag when robots have been set. When a site is in testing or debugging mode it will automatically output a 'noindex, nofollow' tag with the your actual setting as a comment immediately after the tag for reference.
+
+bc. <txp:arc_meta_robots />
+
+h4. Attributes
+
+* robots -- overrides the robots instructions set using the meta robots field on the article Write page or section/category edit page
+
 h3. arc_meta_keywords
 
 Outputs a meta keywords tag when keywords have been set (only works for articles).
