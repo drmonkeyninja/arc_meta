@@ -102,6 +102,25 @@ function arc_meta_description($atts)
 
 }
 
+function arc_meta_robots($atts)
+{
+	extract(lAtts(array(
+		'robots' => null
+	), $atts));
+
+	if ($robots===null) {
+		$meta = _arc_meta();
+		$robots = !empty($meta['robots']) ? $meta['robots'] : null;
+	}
+
+	if ($robots) {
+		return "<meta name='robots' content='$robots' />";		
+	}
+
+	return '';
+
+}
+
 function arc_meta_keywords($atts)
 {
 	global $thisarticle;
