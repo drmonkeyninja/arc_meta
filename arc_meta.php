@@ -350,6 +350,10 @@ function _arc_meta_install()
 		return 'Error - unable to create arc_meta table';
 	}
 
+	if (!in_array('robots', getThings('DESCRIBE ' . safe_pfx('arc_meta')))) {
+		safe_alter('arc_meta', 'ADD robots VARCHAR(45)');
+	}
+
 	// Setup the plugin preferences.
 	_arc_meta_install_prefs();
 
