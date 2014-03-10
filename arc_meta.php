@@ -304,7 +304,8 @@ function _arc_meta($type = null, $typeId = null)
 		$arc_meta = array(
 			'id' => null,
 			'title' => null,
-			'description' => null
+			'description' => null,
+			'robots' => null
 		);
 
 		if (!empty($typeId) && !empty($type)) {
@@ -460,6 +461,10 @@ function _arc_meta_article_meta($event, $step, $data, $rs)
 	$form .= tag('Meta description', 'label', ' for="arc_meta_description"') . '<br />';
 	$form .= text_area('arc_meta_description', null, null, $meta['description'], 'arc_meta_description');
 	$form .= "</p>";
+	$form .= "<p class='edit-category-arc_meta_robots'>";
+	$form .= tag('Meta robots', 'label', ' for="arc_meta_description"') . '<br />';
+	$form .= selectInput('arc_meta_robots', _arc_meta_robots(), $meta['robots'], 'arc_meta_robots');
+	$form .= '</p>';
 
 	return $form.$data;
 }
@@ -478,6 +483,10 @@ function _arc_meta_section_meta($event, $step, $data, $rs)
 	$form .= "<p class='edit-section-arc_meta_description'>";
 	$form .= "<span class='edit-label'> " . tag('Meta description', 'label', ' for="arc_meta_description"') . '</span>';
 	$form .= "<span class='edit-value'> " . text_area('arc_meta_description', null, null, $meta['description'], 'arc_meta_description') . '</span>';
+	$form .= '</p>';
+	$form .= "<p class='edit-category-arc_meta_robots'>";
+	$form .= "<span class='edit-label'> " . tag('Meta robots', 'label', ' for="arc_meta_description"') . '</span>';
+	$form .= "<span class='edit-value'> " . selectInput('arc_meta_robots', _arc_meta_robots(), $meta['robots'], 'arc_meta_robots') . '</span>';
 	$form .= '</p>';
 
 	return $data.$form;
@@ -503,6 +512,10 @@ function _arc_meta_category_meta($event, $step, $data, $rs)
 	$form .= "<span class='edit-label'> " . tag('Meta description', 'label', ' for="arc_meta_description"') . '</span>';
 	$form .= "<span class='edit-value'> " . text_area('arc_meta_description', null, null, $meta['description'], 'arc_meta_description') . '</span>';
 	$form .= '</p>';
+	$form .= "<p class='edit-category-arc_meta_robots'>";
+	$form .= "<span class='edit-label'> " . tag('Meta robots', 'label', ' for="arc_meta_description"') . '</span>';
+	$form .= "<span class='edit-value'> " . selectInput('arc_meta_robots', _arc_meta_robots(), $meta['robots'], 'arc_meta_robots') . '</span>';
+	$form .= '</p>';
 
 	return $data.$form;
 }
@@ -514,12 +527,14 @@ function _arc_meta_article_meta_save($event, $step)
 	$metaId = gps('arc_meta_id');
 	$metaTitle = gps('arc_meta_title');
 	$metaDescription = gps('arc_meta_description');
+	$metaRobots = gps('arc_meta_robots');
 
 	$values = array(
 		'type' => 'article',
 		'type_id' => $articleId,
 		'title' => doSlash($metaTitle),
-		'description' => doSlash($metaDescription)
+		'description' => doSlash($metaDescription),
+		'robots' => doSlash($metaRobots)
 	);
 
 	foreach ($values as $key => $value) {
@@ -547,12 +562,14 @@ function _arc_meta_section_meta_save($event, $step)
 	$metaId = gps('arc_meta_id');
 	$metaTitle = gps('arc_meta_title');
 	$metaDescription = gps('arc_meta_description');
+	$metaRobots = gps('arc_meta_robots');
 
 	$values = array(
 		'type' => 'section',
 		'type_id' => $sectionName,
 		'title' => doSlash($metaTitle),
-		'description' => doSlash($metaDescription)
+		'description' => doSlash($metaDescription),
+		'robots' => doSlash($metaRobots)
 	);
 
 	foreach ($values as $key => $value) {
@@ -580,12 +597,14 @@ function _arc_meta_category_meta_save($event, $step)
 	$metaId = gps('arc_meta_id');
 	$metaTitle = gps('arc_meta_title');
 	$metaDescription = gps('arc_meta_description');
+	$metaRobots = gps('arc_meta_robots');
 
 	$values = array(
 		'type' => 'category',
 		'type_id' => $categoryName,
 		'title' => doSlash($metaTitle),
-		'description' => doSlash($metaDescription)
+		'description' => doSlash($metaDescription),
+		'robots' => doSlash($metaRobots)
 	);
 
 	foreach ($values as $key => $value) {
@@ -604,6 +623,16 @@ function _arc_meta_category_meta_save($event, $step)
 		safe_insert('arc_meta', $sql);
 
 	}
+}
+
+function _arc_meta_robots()
+{
+	return array(
+		'index, follow' => 'index, follow',
+		'index, nofollow' => 'index, nofollow',
+		'noindex, follow' => 'noindex, follow',
+		'noindex, nofollow' => 'noindex, nofollow'
+	);
 }
 
 # --- END PLUGIN CODE ---
