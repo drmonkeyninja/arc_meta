@@ -1,6 +1,6 @@
 <?php
 $plugin['name'] = 'arc_meta';
-$plugin['version'] = '1.1.2';
+$plugin['version'] = '1.1.3';
 $plugin['author'] = 'Andy Carter';
 $plugin['author_uri'] = 'http://andy-carter.com/';
 $plugin['description'] = 'Title and Meta tags';
@@ -33,7 +33,7 @@ function arc_meta_title($atts)
 		'section_title' => $prefs['arc_meta_section_title'],
 		'homepage_title' => $prefs['arc_meta_homepage_title']
 	), $atts));
-	
+
 	if ($title===null) {
 
 		$meta = _arc_meta();
@@ -65,7 +65,7 @@ function arc_meta_title($atts)
 	}
 
 	$html = tag($title, 'title');
-		
+
 	return $html;
 }
 
@@ -95,7 +95,7 @@ function arc_meta_description($atts)
 	}
 
 	if ($description) {
-		return "<meta name='description' content='$description' />";		
+		return "<meta name='description' content='$description' />";
 	}
 
 	return '';
@@ -138,7 +138,7 @@ function arc_meta_keywords($atts)
 
 	if ($keywords) {
 		$keywords = txpspecialchars($keywords);
-		return "<meta name='keywords' content='$keywords' />";		
+		return "<meta name='keywords' content='$keywords' />";
 	}
 
 	return '';
@@ -164,7 +164,7 @@ function arc_meta_open_graph($atts)
 	if ($description===null) {
 
 		$description = !empty($meta['description']) ? txpspecialchars($meta['description']) : null;
-	
+
 	}
 
 	$url = $url===null ? _arc_meta_url() : $url;
@@ -183,7 +183,7 @@ function arc_meta_open_graph($atts)
 		$html .= "<meta property='og:title' content='$title' />";
 	}
 	if ($description) {
-		$html .= "<meta property='og:description' content='$description' />";		
+		$html .= "<meta property='og:description' content='$description' />";
 	}
 	if ($url) {
 		$html .= "<meta property='og:url' content='$url' />";
@@ -218,8 +218,8 @@ function arc_meta_twitter_card($atts)
 	}
 
 	$html = "<meta name='twitter:card' content='$card' />";
-	$html .= "<meta name='twitter:title' content='$title' />";		
-	$html .= "<meta name='twitter:description' content='$description' />";		
+	$html .= "<meta name='twitter:title' content='$title' />";
+	$html .= "<meta name='twitter:description' content='$description' />";
 
 	if ($url) {
 		$html .= "<meta name='twitter:url' content='$url' />";
@@ -324,7 +324,7 @@ function _arc_meta($type = null, $typeId = null)
 			}
 
 		}
-		
+
 		$arc_meta = array(
 			'id' => null,
 			'title' => null,
@@ -345,7 +345,7 @@ function _arc_meta($type = null, $typeId = null)
 
 }
 
-if (@txpinterface == 'admin') 
+if (@txpinterface == 'admin')
 {
 	register_callback('_arc_meta_article_meta', 'article_ui', 'keywords');
 	register_callback('_arc_meta_article_meta_save', 'ping');
@@ -440,7 +440,7 @@ function arc_meta_options($event, $step)
 		'arc_meta_article_title' => 'Article Page Titles',
 		'arc_meta_comment_title' => 'Comment Page Titles',
 		'arc_meta_search_title' => 'Search Page Titles',
-		'arc_meta_category_title' => 'Category Titles',		
+		'arc_meta_category_title' => 'Category Titles',
 		'arc_meta_section_title' => 'Section Titles'
 	);
 
@@ -572,7 +572,7 @@ function _arc_meta_article_meta_save($event, $step)
 		// Update existing meta data.
 		safe_update('arc_meta', $sql, "id=$metaId");
 
-	} elseif (!empty($metaTitle) || !empty($metaDescription)) { 
+	} elseif (!empty($metaTitle) || !empty($metaDescription)) {
 
 		// Create new meta data only if there is data to be saved.
 		safe_insert('arc_meta', $sql);
@@ -607,7 +607,7 @@ function _arc_meta_section_meta_save($event, $step)
 		// Update existing meta data.
 		safe_update('arc_meta', $sql, "id=$metaId");
 
-	} elseif (!empty($metaTitle) || !empty($metaDescription)) { 
+	} elseif (!empty($metaTitle) || !empty($metaDescription)) {
 
 		// Create new meta data only if there is data to be saved.
 		safe_insert('arc_meta', $sql);
@@ -642,7 +642,7 @@ function _arc_meta_category_meta_save($event, $step)
 		// Update existing meta data.
 		safe_update('arc_meta', $sql, "id=$metaId");
 
-	} elseif (!empty($metaTitle) || !empty($metaDescription)) { 
+	} elseif (!empty($metaTitle) || !empty($metaDescription)) {
 
 		// Create new meta data only if there is data to be saved.
 		safe_insert('arc_meta', $sql);
