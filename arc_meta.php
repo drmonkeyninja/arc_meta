@@ -1,6 +1,6 @@
 <?php
 $plugin['name'] = 'arc_meta';
-$plugin['version'] = '1.1.2';
+$plugin['version'] = '1.1.3';
 $plugin['author'] = 'Andy Carter';
 $plugin['author_uri'] = 'http://andy-carter.com/';
 $plugin['description'] = 'Title and Meta tags';
@@ -33,7 +33,7 @@ function arc_meta_title($atts)
 		'section_title' => $prefs['arc_meta_section_title'],
 		'homepage_title' => $prefs['arc_meta_homepage_title']
 	), $atts));
-	
+
 	if ($title===null) {
 
 		$meta = _arc_meta();
@@ -65,7 +65,7 @@ function arc_meta_title($atts)
 	}
 
 	$html = tag($title, 'title');
-		
+
 	return $html;
 }
 
@@ -95,7 +95,50 @@ function arc_meta_description($atts)
 	}
 
 	if ($description) {
-		return "<meta name='description' content='$description' />";		
+		return "<meta name='description' content='$description' />";
+	}
+
+	return '';
+
+}
+
+function arc_meta_robots($atts)
+{
+	extract(lAtts(array(
+		'robots' => null
+	), $atts));
+
+	if ($robots===null) {
+		$meta = _arc_meta();
+		$robots = !empty($meta['robots']) ? $meta['robots'] : null;
+	}
+
+	$out = '';
+
+	if (get_pref('production_status')!='live') {
+		$out .= "<meta name='robots' content='noindex, nofollow' />";
+		$out .= $robots ? "<!-- $robots -->" : null;
+	} elseif ($robots) {
+		$out .= "<meta name='robots' content='$robots' />";
+	}
+
+	return $out;
+
+}
+
+function arc_meta_keywords($atts)
+{
+	global $thisarticle;
+
+	extract(lAtts(array(
+		'keywords' => null
+	), $atts));
+
+	$keywords = $keywords===null && isset($thisarticle['keywords']) ? $thisarticle['keywords'] : null;
+
+	if ($keywords) {
+		$keywords = txpspecialchars($keywords);
+		return "<meta name='keywords' content='$keywords' />";
 	}
 
 	return '';
@@ -121,7 +164,7 @@ function arc_meta_open_graph($atts)
 	if ($description===null) {
 
 		$description = !empty($meta['description']) ? txpspecialchars($meta['description']) : null;
-	
+
 	}
 
 	$url = $url===null ? _arc_meta_url() : $url;
@@ -140,7 +183,7 @@ function arc_meta_open_graph($atts)
 		$html .= "<meta property='og:title' content='$title' />";
 	}
 	if ($description) {
-		$html .= "<meta property='og:description' content='$description' />";		
+		$html .= "<meta property='og:description' content='$description' />";
 	}
 	if ($url) {
 		$html .= "<meta property='og:url' content='$url' />";
@@ -175,8 +218,8 @@ function arc_meta_twitter_card($atts)
 	}
 
 	$html = "<meta name='twitter:card' content='$card' />";
-	$html .= "<meta name='twitter:title' content='$title' />";		
-	$html .= "<meta name='twitter:description' content='$description' />";		
+	$html .= "<meta name='twitter:title' content='$title' />";
+	$html .= "<meta name='twitter:description' content='$description' />";
 
 	if ($url) {
 		$html .= "<meta name='twitter:url' content='$url' />";
@@ -281,11 +324,12 @@ function _arc_meta($type = null, $typeId = null)
 			}
 
 		}
-		
+
 		$arc_meta = array(
 			'id' => null,
 			'title' => null,
-			'description' => null
+			'description' => null,
+			'robots' => null
 		);
 
 		if (!empty($typeId) && !empty($type)) {
@@ -301,7 +345,7 @@ function _arc_meta($type = null, $typeId = null)
 
 }
 
-if (@txpinterface == 'admin') 
+if (@txpinterface == 'admin')
 {
 	register_callback('_arc_meta_article_meta', 'article_ui', 'keywords');
 	register_callback('_arc_meta_article_meta_save', 'ping');
@@ -324,11 +368,16 @@ function _arc_meta_install()
 		`title` varchar(65) DEFAULT NULL,
 		`override_title` tinyint(1) DEFAULT NULL,
 		`description` varchar(150) DEFAULT NULL,
+		`robots` varchar(45) DEFAULT NULL,
 		PRIMARY KEY (`id`)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;";
 
 	if (!safe_query($sql)) {
 		return 'Error - unable to create arc_meta table';
+	}
+
+	if (!in_array('robots', getThings('DESCRIBE ' . safe_pfx('arc_meta')))) {
+		safe_alter('arc_meta', 'ADD robots VARCHAR(45)');
 	}
 
 	// Setup the plugin preferences.
@@ -391,7 +440,7 @@ function arc_meta_options($event, $step)
 		'arc_meta_article_title' => 'Article Page Titles',
 		'arc_meta_comment_title' => 'Comment Page Titles',
 		'arc_meta_search_title' => 'Search Page Titles',
-		'arc_meta_category_title' => 'Category Titles',		
+		'arc_meta_category_title' => 'Category Titles',
 		'arc_meta_section_title' => 'Section Titles'
 	);
 
@@ -430,13 +479,17 @@ function _arc_meta_article_meta($event, $step, $data, $rs)
 
 	$form = hInput('arc_meta_id', $meta['id']);
 	$form .= "<p class='arc_meta_title'>";
-	$form .= tag('Title', 'label', ' for="arc_meta_title"') . '<br />';
+	$form .= tag('Meta title', 'label', ' for="arc_meta_title"') . '<br />';
 	$form .= fInput('text', 'arc_meta_title', $meta['title'], '', '', '', '32', '', 'arc_meta_title');
 	$form .= "</p>";
 	$form .= "<p class='arc_meta_description'>";
-	$form .= tag('Description', 'label', ' for="arc_meta_description"') . '<br />';
+	$form .= tag('Meta description', 'label', ' for="arc_meta_description"') . '<br />';
 	$form .= text_area('arc_meta_description', null, null, $meta['description'], 'arc_meta_description');
 	$form .= "</p>";
+	$form .= "<p class='edit-category-arc_meta_robots'>";
+	$form .= tag('Meta robots', 'label', ' for="arc_meta_description"') . '<br />';
+	$form .= selectInput('arc_meta_robots', _arc_meta_robots(), $meta['robots'], 'arc_meta_robots');
+	$form .= '</p>';
 
 	return $form.$data;
 }
@@ -455,6 +508,10 @@ function _arc_meta_section_meta($event, $step, $data, $rs)
 	$form .= "<p class='edit-section-arc_meta_description'>";
 	$form .= "<span class='edit-label'> " . tag('Meta description', 'label', ' for="arc_meta_description"') . '</span>';
 	$form .= "<span class='edit-value'> " . text_area('arc_meta_description', null, null, $meta['description'], 'arc_meta_description') . '</span>';
+	$form .= '</p>';
+	$form .= "<p class='edit-category-arc_meta_robots'>";
+	$form .= "<span class='edit-label'> " . tag('Meta robots', 'label', ' for="arc_meta_description"') . '</span>';
+	$form .= "<span class='edit-value'> " . selectInput('arc_meta_robots', _arc_meta_robots(), $meta['robots'], 'arc_meta_robots') . '</span>';
 	$form .= '</p>';
 
 	return $data.$form;
@@ -480,6 +537,10 @@ function _arc_meta_category_meta($event, $step, $data, $rs)
 	$form .= "<span class='edit-label'> " . tag('Meta description', 'label', ' for="arc_meta_description"') . '</span>';
 	$form .= "<span class='edit-value'> " . text_area('arc_meta_description', null, null, $meta['description'], 'arc_meta_description') . '</span>';
 	$form .= '</p>';
+	$form .= "<p class='edit-category-arc_meta_robots'>";
+	$form .= "<span class='edit-label'> " . tag('Meta robots', 'label', ' for="arc_meta_description"') . '</span>';
+	$form .= "<span class='edit-value'> " . selectInput('arc_meta_robots', _arc_meta_robots(), $meta['robots'], 'arc_meta_robots') . '</span>';
+	$form .= '</p>';
 
 	return $data.$form;
 }
@@ -491,12 +552,14 @@ function _arc_meta_article_meta_save($event, $step)
 	$metaId = gps('arc_meta_id');
 	$metaTitle = gps('arc_meta_title');
 	$metaDescription = gps('arc_meta_description');
+	$metaRobots = gps('arc_meta_robots');
 
 	$values = array(
 		'type' => 'article',
 		'type_id' => $articleId,
 		'title' => doSlash($metaTitle),
-		'description' => doSlash($metaDescription)
+		'description' => doSlash($metaDescription),
+		'robots' => doSlash($metaRobots)
 	);
 
 	foreach ($values as $key => $value) {
@@ -509,7 +572,7 @@ function _arc_meta_article_meta_save($event, $step)
 		// Update existing meta data.
 		safe_update('arc_meta', $sql, "id=$metaId");
 
-	} elseif (!empty($metaTitle) || !empty($metaDescription)) { 
+	} elseif (!empty($metaTitle) || !empty($metaDescription)) {
 
 		// Create new meta data only if there is data to be saved.
 		safe_insert('arc_meta', $sql);
@@ -524,12 +587,14 @@ function _arc_meta_section_meta_save($event, $step)
 	$metaId = gps('arc_meta_id');
 	$metaTitle = gps('arc_meta_title');
 	$metaDescription = gps('arc_meta_description');
+	$metaRobots = gps('arc_meta_robots');
 
 	$values = array(
 		'type' => 'section',
 		'type_id' => $sectionName,
 		'title' => doSlash($metaTitle),
-		'description' => doSlash($metaDescription)
+		'description' => doSlash($metaDescription),
+		'robots' => doSlash($metaRobots)
 	);
 
 	foreach ($values as $key => $value) {
@@ -542,7 +607,7 @@ function _arc_meta_section_meta_save($event, $step)
 		// Update existing meta data.
 		safe_update('arc_meta', $sql, "id=$metaId");
 
-	} elseif (!empty($metaTitle) || !empty($metaDescription)) { 
+	} elseif (!empty($metaTitle) || !empty($metaDescription)) {
 
 		// Create new meta data only if there is data to be saved.
 		safe_insert('arc_meta', $sql);
@@ -557,12 +622,14 @@ function _arc_meta_category_meta_save($event, $step)
 	$metaId = gps('arc_meta_id');
 	$metaTitle = gps('arc_meta_title');
 	$metaDescription = gps('arc_meta_description');
+	$metaRobots = gps('arc_meta_robots');
 
 	$values = array(
 		'type' => 'category',
 		'type_id' => $categoryName,
 		'title' => doSlash($metaTitle),
-		'description' => doSlash($metaDescription)
+		'description' => doSlash($metaDescription),
+		'robots' => doSlash($metaRobots)
 	);
 
 	foreach ($values as $key => $value) {
@@ -575,12 +642,22 @@ function _arc_meta_category_meta_save($event, $step)
 		// Update existing meta data.
 		safe_update('arc_meta', $sql, "id=$metaId");
 
-	} elseif (!empty($metaTitle) || !empty($metaDescription)) { 
+	} elseif (!empty($metaTitle) || !empty($metaDescription)) {
 
 		// Create new meta data only if there is data to be saved.
 		safe_insert('arc_meta', $sql);
 
 	}
+}
+
+function _arc_meta_robots()
+{
+	return array(
+		'index, follow' => 'index, follow',
+		'index, nofollow' => 'index, nofollow',
+		'noindex, follow' => 'noindex, follow',
+		'noindex, nofollow' => 'noindex, nofollow'
+	);
 }
 
 # --- END PLUGIN CODE ---
@@ -659,6 +736,26 @@ bc. <txp:arc_meta_description />
 h4. Attributes
 
 * description -- overrides the description set using arc_meta's description field on the article Write page or section/category edit page
+
+h3. arc_meta_robots
+
+Outputs a meta robots tag when robots have been set. When a site is in testing or debugging mode it will automatically output a 'noindex, nofollow' tag with the your actual setting as a comment immediately after the tag for reference.
+
+bc. <txp:arc_meta_robots />
+
+h4. Attributes
+
+* robots -- overrides the robots instructions set using the meta robots field on the article Write page or section/category edit page
+
+h3. arc_meta_keywords
+
+Outputs a meta keywords tag when keywords have been set (only works for articles).
+
+bc. <txp:arc_meta_keywords />
+
+h4. Attributes
+
+* keywords -- overrides the keywords set using the meta keywords field on the article Write page
 
 h3. arc_meta_canonical
 
