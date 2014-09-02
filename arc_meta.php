@@ -739,7 +739,7 @@ h4. Attributes
 
 h3. arc_meta_robots
 
-Outputs a meta robots tag when robots have been set. When a site is in testing or debugging mode it will automatically output a 'noindex, nofollow' tag with the your actual setting as a comment immediately after the tag for reference.
+Outputs a meta robots tag when robots have been set. When a site is in testing or debugging mode it will automatically output a 'noindex, nofollow' tag with your actual setting as a comment immediately after the tag for reference.
 
 bc. <txp:arc_meta_robots />
 
