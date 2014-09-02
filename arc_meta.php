@@ -572,7 +572,7 @@ function _arc_meta_article_meta_save($event, $step)
 		// Update existing meta data.
 		safe_update('arc_meta', $sql, "id=$metaId");
 
-	} elseif (!empty($metaTitle) || !empty($metaDescription)) {
+	} elseif (!empty($metaTitle) || !empty($metaDescription) || !empty($metaRobots)) {
 
 		// Create new meta data only if there is data to be saved.
 		safe_insert('arc_meta', $sql);
@@ -607,7 +607,7 @@ function _arc_meta_section_meta_save($event, $step)
 		// Update existing meta data.
 		safe_update('arc_meta', $sql, "id=$metaId");
 
-	} elseif (!empty($metaTitle) || !empty($metaDescription)) {
+	} elseif (!empty($metaTitle) || !empty($metaDescription) || !empty($metaRobots)) {
 
 		// Create new meta data only if there is data to be saved.
 		safe_insert('arc_meta', $sql);
@@ -642,7 +642,7 @@ function _arc_meta_category_meta_save($event, $step)
 		// Update existing meta data.
 		safe_update('arc_meta', $sql, "id=$metaId");
 
-	} elseif (!empty($metaTitle) || !empty($metaDescription)) {
+	} elseif (!empty($metaTitle) || !empty($metaDescription) || !empty($metaRobots)) {
 
 		// Create new meta data only if there is data to be saved.
 		safe_insert('arc_meta', $sql);
