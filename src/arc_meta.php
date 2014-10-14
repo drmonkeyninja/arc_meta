@@ -1,6 +1,6 @@
 <?php
 $plugin['name'] = 'arc_meta';
-$plugin['version'] = '1.1.4';
+$plugin['version'] = '1.2.0';
 $plugin['author'] = 'Andy Carter';
 $plugin['author_uri'] = 'http://andy-carter.com/';
 $plugin['description'] = 'Title and Meta tags';
@@ -31,6 +31,7 @@ function arc_meta_title($atts)
 		'search_title' => $prefs['arc_meta_search_title'],
 		'category_title' => $prefs['arc_meta_category_title'],
 		'section_title' => $prefs['arc_meta_section_title'],
+		'section_category_title' => $prefs['arc_meta_section_category_title'],
 		'homepage_title' => $prefs['arc_meta_homepage_title']
 	), $atts));
 
@@ -52,7 +53,12 @@ function arc_meta_title($atts)
 			$pattern = $search_title;
 		} elseif ($c) {
 			$tokens['_%c_'] = empty($meta['title']) ? txpspecialchars(fetch_category_title($c, $context)) : $meta['title'];
-			$pattern = $category_title;
+			if ($s and $s != 'default') {
+				$tokens['_%s_'] = txpspecialchars(fetch_section_title($s));
+				$pattern = $section_category_title;
+			} else {
+				$pattern = $category_title;
+			}
 		} elseif ($s and $s != 'default') {
 			$tokens['_%s_'] = empty($meta['title']) ? txpspecialchars(fetch_section_title($s)) : $meta['title'];
 			$pattern = $section_title;
@@ -405,6 +411,9 @@ function _arc_meta_install_prefs()
 	if (!isset($prefs['arc_meta_section_title'])) {
 		set_pref('arc_meta_section_title', '%s | %n', 'arc_meta', 1, 'text_input');
 	}
+	if (!isset($prefs['arc_meta_section_category_title'])) {
+		set_pref('arc_meta_section_category_title', '%c - %s | %n', 'arc_meta', 1, 'text_input');
+	}
 	if (!isset($prefs['arc_meta_homepage_title'])) {
 		set_pref('arc_meta_homepage_title', '%n | %t', 'arc_meta', 1, 'text_input');
 	}
@@ -441,7 +450,8 @@ function arc_meta_options($event, $step)
 		'arc_meta_comment_title' => 'Comment Page Titles',
 		'arc_meta_search_title' => 'Search Page Titles',
 		'arc_meta_category_title' => 'Category Titles',
-		'arc_meta_section_title' => 'Section Titles'
+		'arc_meta_section_title' => 'Section Titles',
+		'arc_meta_section_category_title' => 'Section Category Titles'
 	);
 
 	if ($step == 'prefs_save') {
@@ -696,7 +706,7 @@ To set a pattern for a page title you can use the following tokens:-
 
 * @%a@ -- article title, can only be used on article and comment pages
 * @%s@ -- section name, can be used on article and section pages
-* @%c@ -- category name, can be used on category pages (not including filtered section pages)
+* @%c@ -- category name, can be used on category pages
 * @%n@ -- site's name, can be used on all pages
 * @%t@ -- site's slogan, can be used on all pages
 * @%q@ -- search query, can be used on search results page
