@@ -97,7 +97,7 @@ function arc_meta_description($atts)
 
 	if ($description===null) {
 		$meta = _arc_meta();
-		$description = !empty($meta['description']) ? txpspecialchars($meta['description'], ENT_QUOTES) : null;
+		$description = !empty($meta['description']) ? txpspecialchars($meta['description'], ENT_QUOTES) : _arc_meta_description();
 	}
 
 	if ($description) {
