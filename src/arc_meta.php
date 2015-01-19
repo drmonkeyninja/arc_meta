@@ -167,11 +167,7 @@ function arc_meta_open_graph($atts)
 
 	$meta = _arc_meta();
 
-	if ($description===null) {
-
-		$description = !empty($meta['description']) ? txpspecialchars($meta['description']) : null;
-
-	}
+	$description = $description===null ? _arc_meta_description() : $description;
 
 	$url = $url===null ? _arc_meta_url() : $url;
 
