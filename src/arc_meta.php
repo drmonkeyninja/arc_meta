@@ -299,6 +299,10 @@ function _arc_meta_description()
 
 	if (!empty($meta['description'])) {
 		$description = txpspecialchars($meta['description']);
+	} elseif (!empty($thisarticle['excerpt'])) {
+		$description = strip_tags($thisarticle['excerpt']);
+		$description = substr($description, 0, 200);
+		$description = txpspecialchars($description);
 	} elseif (!empty($thisarticle['body'])) {
 		$description = strip_tags($thisarticle['body']);
 		$description = substr($description, 0, 200);
