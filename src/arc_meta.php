@@ -386,6 +386,9 @@ function _arc_meta_install()
 
 	if (!in_array('image', $dbTable)) {
 		safe_alter('arc_meta', 'ADD image INT(11) DEFAULT NULL');
+		// Increased size of title and description columns.
+		safe_alter('arc_meta', 'CHANGE title title VARCHAR(250) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL');
+		safe_alter('arc_meta', 'CHANGE description description VARCHAR(250) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL');
 	}
 
 	// Setup the plugin preferences.
@@ -578,7 +581,7 @@ function _arc_meta_article_meta_save($event, $step)
 		'type' => 'article',
 		'type_id' => $articleId,
 		'title' => doSlash($metaTitle),
-		'description' => doSlash($metaDescription),
+		'description' => substr(doSlash($metaDescription), 0, 250),
 		'robots' => doSlash($metaRobots)
 	);
 
@@ -614,7 +617,7 @@ function _arc_meta_section_meta_save($event, $step)
 		'type' => 'section',
 		'type_id' => $sectionName,
 		'title' => doSlash($metaTitle),
-		'description' => doSlash($metaDescription),
+		'description' => substr(doSlash($metaDescription), 0, 250),
 		'image' => intval($metaImage),
 		'robots' => doSlash($metaRobots)
 	);
@@ -651,7 +654,7 @@ function _arc_meta_category_meta_save($event, $step)
 		'type' => 'category',
 		'type_id' => $categoryName,
 		'title' => doSlash($metaTitle),
-		'description' => doSlash($metaDescription),
+		'description' => substr(doSlash($metaDescription), 0, 250),
 		'image' => intval($metaImage),
 		'robots' => doSlash($metaRobots)
 	);
