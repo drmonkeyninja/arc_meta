@@ -523,7 +523,7 @@ function _arc_meta_section_meta($event, $step, $data, $rs)
 	$form .= '</p>';
 	$form .= "<p class='edit-section-arc_meta_image'>";
 	$form .= "<span class='edit-label'> " . tag('Meta image', 'label', ' for="arc_meta_image"') . '</span>';
-	$form .= "<span class='edit-value'> " . fInput('text', 'arc_meta_image', $meta['image'], '', '', '', '32', '', 'arc_meta_image') . '</span>';
+	$form .= "<span class='edit-value'> " . fInput('number', 'arc_meta_image', $meta['image'], '', '', '', '32', '', 'arc_meta_image') . '</span>';
 	$form .= '</p>';
 	$form .= "<p class='edit-category-arc_meta_robots'>";
 	$form .= "<span class='edit-label'> " . tag('Meta robots', 'label', ' for="arc_meta_description"') . '</span>';
@@ -552,6 +552,10 @@ function _arc_meta_category_meta($event, $step, $data, $rs)
 	$form .= "<p class='edit-category-arc_meta_description'>";
 	$form .= "<span class='edit-label'> " . tag('Meta description', 'label', ' for="arc_meta_description"') . '</span>';
 	$form .= "<span class='edit-value'> " . text_area('arc_meta_description', null, null, $meta['description'], 'arc_meta_description') . '</span>';
+	$form .= '</p>';
+	$form .= "<p class='edit-category-arc_meta_image'>";
+	$form .= "<span class='edit-label'> " . tag('Meta image', 'label', ' for="arc_meta_image"') . '</span>';
+	$form .= "<span class='edit-value'> " . fInput('number', 'arc_meta_image', $meta['image'], '', '', '', '32', '', 'arc_meta_image') . '</span>';
 	$form .= '</p>';
 	$form .= "<p class='edit-category-arc_meta_robots'>";
 	$form .= "<span class='edit-label'> " . tag('Meta robots', 'label', ' for="arc_meta_description"') . '</span>';
@@ -640,6 +644,7 @@ function _arc_meta_category_meta_save($event, $step)
 	$metaId = gps('arc_meta_id');
 	$metaTitle = gps('arc_meta_title');
 	$metaDescription = gps('arc_meta_description');
+	$metaImage = gps('arc_meta_image');
 	$metaRobots = gps('arc_meta_robots');
 
 	$values = array(
@@ -647,6 +652,7 @@ function _arc_meta_category_meta_save($event, $step)
 		'type_id' => $categoryName,
 		'title' => doSlash($metaTitle),
 		'description' => doSlash($metaDescription),
+		'image' => intval($metaImage),
 		'robots' => doSlash($metaRobots)
 	);
 
@@ -660,7 +666,7 @@ function _arc_meta_category_meta_save($event, $step)
 		// Update existing meta data.
 		safe_update('arc_meta', $sql, "id=$metaId");
 
-	} elseif (!empty($metaTitle) || !empty($metaDescription) || !empty($metaRobots)) {
+	} elseif (!empty($metaTitle) || !empty($metaDescription) || !empty($metaImage) || !empty($metaRobots)) {
 
 		// Create new meta data only if there is data to be saved.
 		safe_insert('arc_meta', $sql);
