@@ -164,18 +164,9 @@ function arc_meta_open_graph($atts)
 	), $atts));
 
 	$title = $title===null ? _arc_meta_title() : $title;
-
-	$meta = _arc_meta();
-
 	$description = $description===null ? _arc_meta_description() : $description;
-
 	$url = $url===null ? _arc_meta_url() : $url;
-
-	if ($image===null && $thisarticle['article_image']) {
-
-		$image = _arc_meta_image();
-
-	}
+	$image = $image===null ? _arc_meta_image() : $image;
 
 	$html = '';
 	if ($site_name) {
@@ -212,12 +203,7 @@ function arc_meta_twitter_card($atts)
 	$title = $title===null ? _arc_meta_title() : $title;
 	$description = $description===null ? _arc_meta_description() : $description;
 	$url = $url===null ? _arc_meta_url() : $url;
-
-	if ($image===null && $thisarticle['article_image']) {
-
-		$image = _arc_meta_image();
-
-	}
+	$image = $image===null ? _arc_meta_image() : $image;
 
 	$html = "<meta name='twitter:card' content='$card' />";
 	$html .= "<meta name='twitter:title' content='$title' />";
@@ -277,6 +263,15 @@ function _arc_meta_image()
 	if (intval($image)) {
 
 		if ($rs = safe_row('*', 'txp_image', 'id = ' . intval($image))) {
+			$image = imagesrcurl($rs['id'], $rs['ext']);
+		} else {
+			$image = null;
+		}
+
+	} else {
+
+		$meta = _arc_meta();
+		if (!empty($meta['image']) && $rs = safe_row('*', 'txp_image', 'id = ' . intval($meta['image']))) {
 			$image = imagesrcurl($rs['id'], $rs['ext']);
 		} else {
 			$image = null;
