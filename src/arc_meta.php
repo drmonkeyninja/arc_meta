@@ -382,8 +382,14 @@ function _arc_meta_install()
 		return 'Error - unable to create arc_meta table';
 	}
 
-	if (!in_array('robots', getThings('DESCRIBE ' . safe_pfx('arc_meta')))) {
+	$dbTable = getThings('DESCRIBE ' . safe_pfx('arc_meta'));
+	
+	if (!in_array('robots', $dbTable)) {
 		safe_alter('arc_meta', 'ADD robots VARCHAR(45)');
+	}
+
+	if (!in_array('image', $dbTable)) {
+		safe_alter('arc_meta', 'ADD image INT(11) DEFAULT NULL');
 	}
 
 	// Setup the plugin preferences.
