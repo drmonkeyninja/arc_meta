@@ -1,6 +1,6 @@
 <?php
 $plugin['name'] = 'arc_meta';
-$plugin['version'] = '1.2.0';
+$plugin['version'] = '1.3.0';
 $plugin['author'] = 'Andy Carter';
 $plugin['author_uri'] = 'http://andy-carter.com/';
 $plugin['description'] = 'Title and Meta tags';
@@ -97,7 +97,7 @@ function arc_meta_description($atts)
 
 	if ($description===null) {
 		$meta = _arc_meta();
-		$description = !empty($meta['description']) ? txpspecialchars($meta['description'], ENT_QUOTES) : null;
+		$description = !empty($meta['description']) ? txpspecialchars($meta['description'], ENT_QUOTES) : _arc_meta_description();
 	}
 
 	if ($description) {
@@ -164,22 +164,9 @@ function arc_meta_open_graph($atts)
 	), $atts));
 
 	$title = $title===null ? _arc_meta_title() : $title;
-
-	$meta = _arc_meta();
-
-	if ($description===null) {
-
-		$description = !empty($meta['description']) ? txpspecialchars($meta['description']) : null;
-
-	}
-
+	$description = $description===null ? _arc_meta_description() : $description;
 	$url = $url===null ? _arc_meta_url() : $url;
-
-	if ($image===null && $thisarticle['article_image']) {
-
-		$image = _arc_meta_image();
-
-	}
+	$image = $image===null ? _arc_meta_image() : $image;
 
 	$html = '';
 	if ($site_name) {
@@ -216,12 +203,7 @@ function arc_meta_twitter_card($atts)
 	$title = $title===null ? _arc_meta_title() : $title;
 	$description = $description===null ? _arc_meta_description() : $description;
 	$url = $url===null ? _arc_meta_url() : $url;
-
-	if ($image===null && $thisarticle['article_image']) {
-
-		$image = _arc_meta_image();
-
-	}
+	$image = $image===null ? _arc_meta_image() : $image;
 
 	$html = "<meta name='twitter:card' content='$card' />";
 	$html .= "<meta name='twitter:title' content='$title' />";
@@ -286,6 +268,15 @@ function _arc_meta_image()
 			$image = null;
 		}
 
+	} else {
+
+		$meta = _arc_meta();
+		if (!empty($meta['image']) && $rs = safe_row('*', 'txp_image', 'id = ' . intval($meta['image']))) {
+			$image = imagesrcurl($rs['id'], $rs['ext']);
+		} else {
+			$image = null;
+		}
+
 	}
 
 	return $image;
@@ -299,6 +290,10 @@ function _arc_meta_description()
 
 	if (!empty($meta['description'])) {
 		$description = txpspecialchars($meta['description']);
+	} elseif (!empty($thisarticle['excerpt'])) {
+		$description = strip_tags($thisarticle['excerpt']);
+		$description = substr($description, 0, 200);
+		$description = txpspecialchars($description);
 	} elseif (!empty($thisarticle['body'])) {
 		$description = strip_tags($thisarticle['body']);
 		$description = substr($description, 0, 200);
@@ -335,6 +330,7 @@ function _arc_meta($type = null, $typeId = null)
 			'id' => null,
 			'title' => null,
 			'description' => null,
+			'image' => null,
 			'robots' => null
 		);
 
@@ -371,9 +367,9 @@ function _arc_meta_install()
 		`id` int(11) NOT NULL AUTO_INCREMENT,
 		`type` varchar(8) NOT NULL,
 		`type_id` varchar(128) NOT NULL,
-		`title` varchar(65) DEFAULT NULL,
+		`title` varchar(250) DEFAULT NULL,
 		`override_title` tinyint(1) DEFAULT NULL,
-		`description` varchar(150) DEFAULT NULL,
+		`description` varchar(250) DEFAULT NULL,
 		`robots` varchar(45) DEFAULT NULL,
 		PRIMARY KEY (`id`)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;";
@@ -382,8 +378,17 @@ function _arc_meta_install()
 		return 'Error - unable to create arc_meta table';
 	}
 
-	if (!in_array('robots', getThings('DESCRIBE ' . safe_pfx('arc_meta')))) {
+	$dbTable = getThings('DESCRIBE ' . safe_pfx('arc_meta'));
+	
+	if (!in_array('robots', $dbTable)) {
 		safe_alter('arc_meta', 'ADD robots VARCHAR(45)');
+	}
+
+	if (!in_array('image', $dbTable)) {
+		safe_alter('arc_meta', 'ADD image INT(11) DEFAULT NULL');
+		// Increased size of title and description columns.
+		safe_alter('arc_meta', 'CHANGE title title VARCHAR(250) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL');
+		safe_alter('arc_meta', 'CHANGE description description VARCHAR(250) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL');
 	}
 
 	// Setup the plugin preferences.
@@ -519,6 +524,10 @@ function _arc_meta_section_meta($event, $step, $data, $rs)
 	$form .= "<span class='edit-label'> " . tag('Meta description', 'label', ' for="arc_meta_description"') . '</span>';
 	$form .= "<span class='edit-value'> " . text_area('arc_meta_description', null, null, $meta['description'], 'arc_meta_description') . '</span>';
 	$form .= '</p>';
+	$form .= "<p class='edit-section-arc_meta_image'>";
+	$form .= "<span class='edit-label'> " . tag('Meta image', 'label', ' for="arc_meta_image"') . '</span>';
+	$form .= "<span class='edit-value'> " . fInput('number', 'arc_meta_image', $meta['image'], '', '', '', '32', '', 'arc_meta_image') . '</span>';
+	$form .= '</p>';
 	$form .= "<p class='edit-category-arc_meta_robots'>";
 	$form .= "<span class='edit-label'> " . tag('Meta robots', 'label', ' for="arc_meta_description"') . '</span>';
 	$form .= "<span class='edit-value'> " . selectInput('arc_meta_robots', _arc_meta_robots(), $meta['robots'], 'arc_meta_robots') . '</span>';
@@ -547,6 +556,10 @@ function _arc_meta_category_meta($event, $step, $data, $rs)
 	$form .= "<span class='edit-label'> " . tag('Meta description', 'label', ' for="arc_meta_description"') . '</span>';
 	$form .= "<span class='edit-value'> " . text_area('arc_meta_description', null, null, $meta['description'], 'arc_meta_description') . '</span>';
 	$form .= '</p>';
+	$form .= "<p class='edit-category-arc_meta_image'>";
+	$form .= "<span class='edit-label'> " . tag('Meta image', 'label', ' for="arc_meta_image"') . '</span>';
+	$form .= "<span class='edit-value'> " . fInput('number', 'arc_meta_image', $meta['image'], '', '', '', '32', '', 'arc_meta_image') . '</span>';
+	$form .= '</p>';
 	$form .= "<p class='edit-category-arc_meta_robots'>";
 	$form .= "<span class='edit-label'> " . tag('Meta robots', 'label', ' for="arc_meta_description"') . '</span>';
 	$form .= "<span class='edit-value'> " . selectInput('arc_meta_robots', _arc_meta_robots(), $meta['robots'], 'arc_meta_robots') . '</span>';
@@ -568,7 +581,7 @@ function _arc_meta_article_meta_save($event, $step)
 		'type' => 'article',
 		'type_id' => $articleId,
 		'title' => doSlash($metaTitle),
-		'description' => doSlash($metaDescription),
+		'description' => substr(doSlash($metaDescription), 0, 250),
 		'robots' => doSlash($metaRobots)
 	);
 
@@ -597,13 +610,15 @@ function _arc_meta_section_meta_save($event, $step)
 	$metaId = gps('arc_meta_id');
 	$metaTitle = gps('arc_meta_title');
 	$metaDescription = gps('arc_meta_description');
+	$metaImage = gps('arc_meta_image');
 	$metaRobots = gps('arc_meta_robots');
 
 	$values = array(
 		'type' => 'section',
 		'type_id' => $sectionName,
 		'title' => doSlash($metaTitle),
-		'description' => doSlash($metaDescription),
+		'description' => substr(doSlash($metaDescription), 0, 250),
+		'image' => intval($metaImage),
 		'robots' => doSlash($metaRobots)
 	);
 
@@ -617,7 +632,7 @@ function _arc_meta_section_meta_save($event, $step)
 		// Update existing meta data.
 		safe_update('arc_meta', $sql, "id=$metaId");
 
-	} elseif (!empty($metaTitle) || !empty($metaDescription) || !empty($metaRobots)) {
+	} elseif (!empty($metaTitle) || !empty($metaDescription) || !empty($metaImage) || !empty($metaRobots)) {
 
 		// Create new meta data only if there is data to be saved.
 		safe_insert('arc_meta', $sql);
@@ -632,13 +647,15 @@ function _arc_meta_category_meta_save($event, $step)
 	$metaId = gps('arc_meta_id');
 	$metaTitle = gps('arc_meta_title');
 	$metaDescription = gps('arc_meta_description');
+	$metaImage = gps('arc_meta_image');
 	$metaRobots = gps('arc_meta_robots');
 
 	$values = array(
 		'type' => 'category',
 		'type_id' => $categoryName,
 		'title' => doSlash($metaTitle),
-		'description' => doSlash($metaDescription),
+		'description' => substr(doSlash($metaDescription), 0, 250),
+		'image' => intval($metaImage),
 		'robots' => doSlash($metaRobots)
 	);
 
@@ -652,7 +669,7 @@ function _arc_meta_category_meta_save($event, $step)
 		// Update existing meta data.
 		safe_update('arc_meta', $sql, "id=$metaId");
 
-	} elseif (!empty($metaTitle) || !empty($metaDescription) || !empty($metaRobots)) {
+	} elseif (!empty($metaTitle) || !empty($metaDescription) || !empty($metaImage) || !empty($metaRobots)) {
 
 		// Create new meta data only if there is data to be saved.
 		safe_insert('arc_meta', $sql);
