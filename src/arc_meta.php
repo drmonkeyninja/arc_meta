@@ -83,7 +83,7 @@ function arc_meta_canonical($atts)
 
 	$url = $url !==null ? $url : _arc_meta_url();
 
-	$html = "<link rel='canonical' href='$url' />";
+	$html = "<link rel=\"canonical\" href=\"$url\" />";
 
 	return $html;
 
@@ -101,7 +101,7 @@ function arc_meta_description($atts)
 	}
 
 	if ($description) {
-		return "<meta name='description' content='$description' />";
+		return "<meta name=\"description\" content=\"$description\" />";
 	}
 
 	return '';
@@ -122,10 +122,10 @@ function arc_meta_robots($atts)
 	$out = '';
 
 	if (get_pref('production_status')!='live') {
-		$out .= "<meta name='robots' content='noindex, nofollow' />";
+		$out .= "<meta name=\"robots\" content=\"noindex, nofollow\" />";
 		$out .= $robots ? "<!-- $robots -->" : null;
 	} elseif ($robots) {
-		$out .= "<meta name='robots' content='$robots' />";
+		$out .= "<meta name=\"robots\" content=\"$robots\" />";
 	}
 
 	return $out;
@@ -144,7 +144,7 @@ function arc_meta_keywords($atts)
 
 	if ($keywords) {
 		$keywords = txpspecialchars($keywords);
-		return "<meta name='keywords' content='$keywords' />";
+		return "<meta name=\"keywords\" content=\"$keywords\" />";
 	}
 
 	return '';
@@ -170,19 +170,19 @@ function arc_meta_open_graph($atts)
 
 	$html = '';
 	if ($site_name) {
-		$html .= "<meta property='og:site_name' content='$site_name' />";
+		$html .= "<meta property=\"og:site_name\" content=\"$site_name\" />";
 	}
 	if ($title)	{
-		$html .= "<meta property='og:title' content='$title' />";
+		$html .= "<meta property=\"og:title\" content=\"$title\" />";
 	}
 	if ($description) {
-		$html .= "<meta property='og:description' content='$description' />";
+		$html .= "<meta property=\"og:description\" content=\"$description\" />";
 	}
 	if ($url) {
-		$html .= "<meta property='og:url' content='$url' />";
+		$html .= "<meta property=\"og:url\" content=\"$url\" />";
 	}
 	if ($image) {
-		$html .= "<meta property='og:image' content='$image' />";
+		$html .= "<meta property=\"og:image\" content=\"$image\" />";
 	}
 
 	return $html;
@@ -205,15 +205,15 @@ function arc_meta_twitter_card($atts)
 	$url = $url===null ? _arc_meta_url() : $url;
 	$image = $image===null ? _arc_meta_image() : $image;
 
-	$html = "<meta name='twitter:card' content='$card' />";
-	$html .= "<meta name='twitter:title' content='$title' />";
-	$html .= "<meta name='twitter:description' content='$description' />";
+	$html = "<meta name=\"twitter:card\" content=\"$card\" />";
+	$html .= "<meta name=\"twitter:title\" content=\"$title\" />";
+	$html .= "<meta name=\"twitter:description\" content=\"$description\" />";
 
 	if ($url) {
-		$html .= "<meta name='twitter:url' content='$url' />";
+		$html .= "<meta name=\"twitter:url\" content=\"$url\" />";
 	}
 	if ($image) {
-		$html .= "<meta name='twitter:image:src' content='$image' />";
+		$html .= "<meta name=\"twitter:image:src\" content=\"$image\" />";
 	}
 
 	return $html;
