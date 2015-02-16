@@ -259,6 +259,44 @@ function arc_meta_organization($atts)
 
 }
 
+function arc_meta_person($atts)
+{
+	global $prefs;
+
+	extract(lAtts(array(
+		'name' => $prefs['sitename'],
+		'logo' => null,
+		'facebook' => null,
+		'gplus' => null,
+		'twitter' => null
+	), $atts));
+
+	$data = array(
+		'@context' => 'http://schema.org',
+		'@type' => 'Person',
+		'name' => $name,
+		'url' => hu
+	);
+
+	$sameAs = array();
+	if (!empty($facebook)) {
+		$sameAs[] = $facebook;
+	}
+	if (!empty($gplus)) {
+		$sameAs[] = $gplus;
+	}
+	if (!empty($twitter)) {
+		$sameAs[] = $twitter;
+	}
+
+	if (!empty($sameAs)) {
+		$data['sameAs'] = $sameAs;
+	}
+
+	return '<script type="application/ld+json">' . str_replace('\\/', '/', json_encode($data)) . '</script>';
+
+}
+
 function _arc_meta_title()
 {
 	global $thisarticle, $prefs, $s, $c;
