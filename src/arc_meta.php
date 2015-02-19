@@ -232,6 +232,10 @@ function arc_meta_organization($atts)
 		'twitter' => null
 	), $atts));
 
+	if (empty($logo)) {
+		trigger_error('arc_meta_organization missing logo attribute', E_USER_WARNING);
+	}
+
 	$data = array(
 		'@context' => 'http://schema.org',
 		'@type' => 'Organization',
