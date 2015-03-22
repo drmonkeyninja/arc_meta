@@ -532,6 +532,9 @@ function arc_meta_section_tab($event, $step)
 			arc_meta_section_edit();
 			break;
 
+		case 'save':
+			_arc_meta_section_meta_save($event, $step);
+
 		default:
 			arc_meta_section_list();
 			break;
@@ -606,6 +609,7 @@ function arc_meta_section_edit()
 
 	// Meta data fields
 	$form .= hInput('arc_meta_id', $meta['id']);
+	$form .= hInput('name', $name);
 	$form .= "<span class='edit-label'> " . tag('Meta title', 'label', ' for="arc_meta_title"') . '</span>';
 	$form .= "<span class='edit-value'> " . fInput('text', 'arc_meta_title', $meta['title'], '', '', '', '32', '', 'arc_meta_title') . '</span>';
 	$form .= '</p>';
