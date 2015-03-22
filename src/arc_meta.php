@@ -440,6 +440,10 @@ if (@txpinterface == 'admin')
 
 	register_callback('_arc_meta_category_meta', 'category_ui', 'extend_detail_form');
 	register_callback('_arc_meta_category_meta_save', 'category', 'cat_article_save');
+
+	add_privs('arc_meta_section_tab', '1,2,3,4');
+	register_tab('extensions', 'arc_meta_section_tab', 'Sections Meta Data');
+	register_callback('arc_meta_section_tab', 'arc_meta_section_tab');
 }
 
 function _arc_meta_install()
@@ -460,7 +464,7 @@ function _arc_meta_install()
 	}
 
 	$dbTable = getThings('DESCRIBE ' . safe_pfx('arc_meta'));
-	
+
 	if (!in_array('robots', $dbTable)) {
 		safe_alter('arc_meta', 'ADD robots VARCHAR(45)');
 	}
@@ -477,6 +481,7 @@ function _arc_meta_install()
 
 	return;
 }
+
 /**
  * Setup the plugin preferences if they have not yet been set.
  */
@@ -518,6 +523,112 @@ function _arc_meta_uninstall()
 		return 'Error - unable to delete arc_meta preferences';
 	}
 	return;
+}
+
+function arc_meta_section_tab($event, $step)
+{
+	switch ($step) {
+		case 'edit':
+			arc_meta_section_edit();
+			break;
+
+		default:
+			arc_meta_section_list();
+			break;
+	}
+}
+
+function arc_meta_section_list()
+{
+	global $event;
+
+	pagetop('Section Meta Data');
+
+	$html = '<h1 class="txp-heading">Section Meta Data</h1>';
+
+	$rs = safe_query(
+		'SELECT sections.*, arc_meta.title AS meta_title FROM ' . safe_pfx('txp_section') . ' sections LEFT JOIN ' . safe_pfx('arc_meta') . ' arc_meta ON arc_meta.type = "section" AND arc_meta.type_id = sections.name WHERE 1=1'
+	);
+
+	if ($rs) {
+
+		$html .= n . '<div id="' . $event . '_container" class="txp-container">';
+
+		$html .= n . '<div class="txp-listtables">' . n
+				. n . startTable('', '', 'txp-list')
+				. n . '<thead>'
+				. n . tr(hCell('Name') . hCell('Title') . hCell('Meta Title') . hCell('Manage'))
+			. n . '</thead>';
+
+		while ($row = nextRow($rs)) {
+			$editLink = href(
+				gTxt('edit'),
+				'?event=arc_meta_section_tab&amp;step=edit&amp;name=' . $row['name']
+			);
+			$html .= n . tr(
+				n . td($row['name']) . td($row['title']) . td($row['meta_title']) . td($editLink)
+			);
+		}
+
+		$html .= n . endTable();
+
+		$html .= n . '</div>';
+
+	}
+
+	echo $html;
+}
+
+function arc_meta_section_edit()
+{
+	global $event;
+
+	$name = gps('name');
+
+	$rs = safe_query(
+		'SELECT sections.title AS section, arc_meta.* FROM ' . safe_pfx('txp_section') . ' sections LEFT JOIN ' . safe_pfx('arc_meta') . ' arc_meta ON arc_meta.type = "section" AND arc_meta.type_id = sections.name WHERE sections.name="' . doSlash($name) . '"'
+	);
+
+	$meta = nextRow($rs);
+
+	pagetop('Section Meta Data');
+
+	$form = '';
+
+	$form .= '<div class="txp-edit">';
+	$form .= hed('Edit Section Meta Data', 2);
+
+	// We include the section title as a disabled field for the user's
+	// reference.
+	$form .= "<span class='edit-label'> " . tag('Section', 'label', ' for="section"') . '</span>';
+	$form .= "<span class='edit-value'> " . fInput('text', 'section', $meta['section'], '', '', '', '32', '', 'section', true) . '</span>';
+	$form .= '</p>';
+
+	// Meta data fields
+	$form .= hInput('arc_meta_id', $meta['id']);
+	$form .= "<span class='edit-label'> " . tag('Meta title', 'label', ' for="arc_meta_title"') . '</span>';
+	$form .= "<span class='edit-value'> " . fInput('text', 'arc_meta_title', $meta['title'], '', '', '', '32', '', 'arc_meta_title') . '</span>';
+	$form .= '</p>';
+	$form .= "<p class='edit-section-arc_meta_description'>";
+	$form .= "<span class='edit-label'> " . tag('Meta description', 'label', ' for="arc_meta_description"') . '</span>';
+	$form .= "<span class='edit-value'> " . text_area('arc_meta_description', null, null, $meta['description'], 'arc_meta_description') . '</span>';
+	$form .= '</p>';
+	$form .= "<p class='edit-section-arc_meta_image'>";
+	$form .= "<span class='edit-label'> " . tag('Meta image', 'label', ' for="arc_meta_image"') . '</span>';
+	$form .= "<span class='edit-value'> " . fInput('number', 'arc_meta_image', $meta['image'], '', '', '', '32', '', 'arc_meta_image') . '</span>';
+	$form .= '</p>';
+	$form .= "<p class='edit-category-arc_meta_robots'>";
+	$form .= "<span class='edit-label'> " . tag('Meta robots', 'label', ' for="arc_meta_description"') . '</span>';
+	$form .= "<span class='edit-value'> " . selectInput('arc_meta_robots', _arc_meta_robots(), $meta['robots'], 'arc_meta_robots') . '</span>';
+	$form .= '</p>';
+
+	$form .= sInput('save') . eInput($event) . fInput('submit', 'save', gTxt('Save'), 'publish');
+
+	$form .= '</div>';
+
+	$html = '<div id="' . $event . '_container" class="txp-container">' . form($form, '', '', 'post', 'edit-form') . '</div>';
+
+	echo $html;
 }
 
 function arc_meta_options($event, $step)
