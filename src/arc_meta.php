@@ -818,6 +818,11 @@ function _arc_meta_section_meta_save($event, $step)
 		'robots' => doSlash($metaRobots)
 	);
 
+	if (empty($values['image'])) {
+		unset($values['image']);
+		$sql[] = "image = NULL";
+	}
+
 	foreach ($values as $key => $value) {
 		$sql[] = "$key = '$value'";
 	}
