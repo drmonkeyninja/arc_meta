@@ -1,6 +1,6 @@
 <?php
 $plugin['name'] = 'arc_meta';
-$plugin['version'] = '1.3.0';
+$plugin['version'] = '1.3.1';
 $plugin['author'] = 'Andy Carter';
 $plugin['author_uri'] = 'http://andy-carter.com/';
 $plugin['description'] = 'Title and Meta tags';
@@ -379,7 +379,7 @@ function _arc_meta_install()
 	}
 
 	$dbTable = getThings('DESCRIBE ' . safe_pfx('arc_meta'));
-	
+
 	if (!in_array('robots', $dbTable)) {
 		safe_alter('arc_meta', 'ADD robots VARCHAR(45)');
 	}
@@ -621,6 +621,11 @@ function _arc_meta_section_meta_save($event, $step)
 		'image' => intval($metaImage),
 		'robots' => doSlash($metaRobots)
 	);
+
+	if (empty($values['image'])) {
+		unset($values['image']);
+		$sql[] = "image = NULL";
+	}
 
 	foreach ($values as $key => $value) {
 		$sql[] = "$key = '$value'";
