@@ -666,6 +666,8 @@ function arc_meta_options($event, $step)
 
 	$form = '';
 
+	$form .= hed('Page Title Patterns', 2);
+
 	foreach ($fields as $key => $label) {
 		$form .= "<p class='$key'><span class='edit-label'><label for='$key'>$label</label></span>";
 		$form .= "<span class='edit-value'>" . fInput('text', $key, $prefs[$key], '', '', '', '', '', $key) . "</span>";
@@ -677,7 +679,7 @@ function arc_meta_options($event, $step)
 	$form .= '<p>'.fInput('submit', 'Submit', gTxt('save_button'), 'publish').'</p>';
 
 	$html = "<h1 class='txp-heading'>arc_meta</h1>";
-	$html .= form("<div class='plugin-column'>" . $form . "</div>", " class='edit-form'");
+	$html .= form("<div class='txp-edit'>" . $form . "</div>", " class='edit-form'");
 
 	echo $html;
 }
