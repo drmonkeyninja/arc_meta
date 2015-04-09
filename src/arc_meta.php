@@ -442,7 +442,7 @@ if (@txpinterface == 'admin')
 	register_callback('_arc_meta_category_meta_save', 'category', 'cat_article_save');
 
 	add_privs('arc_meta_section_tab', '1,2,3,4');
-	register_tab('extensions', 'arc_meta_section_tab', 'Sections Meta Data');
+	register_tab($prefs['arc_meta_section_tab'], 'arc_meta_section_tab', 'Sections Meta Data');
 	register_callback('arc_meta_section_tab', 'arc_meta_section_tab');
 }
 
@@ -507,6 +507,9 @@ function _arc_meta_install_prefs()
 	}
 	if (!isset($prefs['arc_meta_homepage_title'])) {
 		set_pref('arc_meta_homepage_title', '%n | %t', 'arc_meta', 1, 'text_input');
+	}
+	if (!isset($prefs['arc_meta_section_tab'])) {
+		set_pref('arc_meta_section_tab', 'content', 'arc_meta', 1, 'text_input');
 	}
 	return;
 }
@@ -652,7 +655,8 @@ function arc_meta_options($event, $step)
 		'arc_meta_search_title' => 'Search Page Titles',
 		'arc_meta_category_title' => 'Category Titles',
 		'arc_meta_section_title' => 'Section Titles',
-		'arc_meta_section_category_title' => 'Section Category Titles'
+		'arc_meta_section_category_title' => 'Section Category Titles',
+		'arc_meta_section_tab' => 'Location of Panel'
 	);
 
 	if ($step == 'prefs_save') {
@@ -664,6 +668,9 @@ function arc_meta_options($event, $step)
 
 	}
 
+	// Remove the arc_meta_section_tab field as we want to manually add this.
+	unset($fields['arc_meta_section_tab']);
+
 	$form = '';
 
 	$form .= hed('Page Title Patterns', 2);
@@ -674,14 +681,29 @@ function arc_meta_options($event, $step)
 		$form .= '</p>';
 	}
 
-	$form .= sInput('prefs_save').n.eInput('plugin_prefs.arc_meta');
+	$panels = array(
+		'content' => 'Content',
+		'extensions' => 'Extensions',
+		'' => 'Hidden'
+	);
 
-	$form .= '<p>'.fInput('submit', 'Submit', gTxt('save_button'), 'publish').'</p>';
+	$panel = $prefs['arc_meta_section_tab'];
+
+	$form .= hed('Sections Meta Data Panel', 2);
+	$form .= '<p class="arc_meta_section_tab"><span class="edit-label"><label for="arc_meta_section_tab">Location of Panel</label></span>';
+	$form .= '<span class="edit-value">' . selectInput('arc_meta_section_tab', $panels, $panel, '', '', 'arc_meta_section_tab') . "</span>";
+	$form .= '</p>';
+
+	$form .= sInput('prefs_save') . n . eInput('plugin_prefs.arc_meta');
+
+	$form .= '<p>' . fInput('submit', 'Submit', gTxt('save_button'), 'publish') . '</p>';
 
 	$html = "<h1 class='txp-heading'>arc_meta</h1>";
 	$html .= form("<div class='txp-edit'>" . $form . "</div>", " class='edit-form'");
 
 	echo $html;
+
+	return;
 }
 
 function _arc_meta_article_meta($event, $step, $data, $rs)
