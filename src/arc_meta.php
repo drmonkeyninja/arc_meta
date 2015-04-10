@@ -553,7 +553,7 @@ function arc_meta_section_list()
     $html = '<h1 class="txp-heading">Section Meta Data</h1>';
 
     $rs = safe_query(
-        'SELECT sections.*, arc_meta.title AS meta_title FROM ' . safe_pfx('txp_section') . ' sections LEFT JOIN ' . safe_pfx('arc_meta') . ' arc_meta ON arc_meta.type = "section" AND arc_meta.type_id = sections.name WHERE 1=1'
+        'SELECT sections.*, arc_meta.title AS meta_title FROM ' . safe_pfx('txp_section') . ' sections LEFT JOIN ' . safe_pfx('arc_meta') . ' arc_meta ON arc_meta.type = "section" AND arc_meta.type_id = sections.name WHERE 1=1 ORDER BY CASE WHEN sections.name = "default" THEN 1 ELSE 2 END, sections.name ASC'
     );
 
     if ($rs) {
