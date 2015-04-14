@@ -1069,6 +1069,34 @@ h4. Attributes
 * url
 * image
 
+h3. arc_meta_organization
+
+Outputs Knowledge Graph social profiles script tag for an organisation.
+
+bc. <txp:arc_meta_organization />
+
+h4. Attributes
+
+* name -- Organisation's name
+* logo -- URL to organisation's logo (required, will throw an error if not set)
+* facebook -- URL to Facebook page
+* gplus -- URL to Google+ page
+* twitter -- URL to Twitter account
+
+h3. arc_meta_person
+
+Outputs Knowledge Graph social profiles script tag for a person.
+
+bc. <txp:arc_meta_person />
+
+h4. Attributes
+
+* name -- Person's name
+* logo -- URL to person's picture
+* facebook -- URL to Facebook page
+* gplus -- URL to Google+ page
+* twitter -- URL to Twitter account
+
 h2. Admin
 
 h3. Article Write Page
