@@ -13,7 +13,7 @@ if (empty($test)) {
 
 function extract_section($lines, $section) {
 	$result = "";
-	
+
 	$start_delim = "# --- BEGIN PLUGIN $section ---";
 	$end_delim = "# --- END PLUGIN $section ---";
 
@@ -53,7 +53,7 @@ function compile_plugin($file='') {
 
 	$plugin['md5'] = md5( $plugin['code'] );
 
-	// to produce a copy of the plugin for distribution, load this file in a browser. 
+	// to produce a copy of the plugin for distribution, load this file in a browser.
 
 	header('Content-type: text/plain');
 	$header = <<<EOF
