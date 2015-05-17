@@ -1,6 +1,6 @@
 <?php
 $plugin['name'] = 'arc_meta';
-$plugin['version'] = '1.3.0';
+$plugin['version'] = '1.4.0';
 $plugin['author'] = 'Andy Carter';
 $plugin['author_uri'] = 'http://andy-carter.com/';
 $plugin['description'] = 'Title and Meta tags';
@@ -8,15 +8,16 @@ $plugin['order'] = '5';
 $plugin['type'] = '5';
 $plugin['flags'] = '3';
 
-if (!defined('txpinterface'))
+if (!defined('txpinterface')) {
     @include_once('zem_tpl.php');
+}
 
 # --- BEGIN PLUGIN CODE ---
 global $prefs, $txpcfg;
 
-register_callback('_arc_meta_install','plugin_lifecycle.arc_meta', 'installed');
-register_callback('_arc_meta_uninstall','plugin_lifecycle.arc_meta', 'deleted');
-register_callback('arc_meta_options','plugin_prefs.arc_meta');
+register_callback('_arc_meta_install', 'plugin_lifecycle.arc_meta', 'installed');
+register_callback('_arc_meta_uninstall', 'plugin_lifecycle.arc_meta', 'deleted');
+register_callback('arc_meta_options', 'plugin_prefs.arc_meta');
 add_privs('plugin_prefs.arc_meta', '1,2');
 
 function arc_meta_title($atts)
@@ -35,7 +36,7 @@ function arc_meta_title($atts)
         'homepage_title' => $prefs['arc_meta_homepage_title']
     ), $atts));
 
-    if ($title===null) {
+    if ($title === null) {
 
         $meta = _arc_meta();
 
@@ -86,7 +87,6 @@ function arc_meta_canonical($atts)
     $html = "<link rel=\"canonical\" href=\"$url\" />";
 
     return $html;
-
 }
 
 function arc_meta_description($atts)
@@ -105,7 +105,6 @@ function arc_meta_description($atts)
     }
 
     return '';
-
 }
 
 function arc_meta_robots($atts)
@@ -114,14 +113,14 @@ function arc_meta_robots($atts)
         'robots' => null
     ), $atts));
 
-    if ($robots===null) {
+    if ($robots === null) {
         $meta = _arc_meta();
         $robots = !empty($meta['robots']) ? $meta['robots'] : null;
     }
 
     $out = '';
 
-    if (get_pref('production_status')!='live') {
+    if (get_pref('production_status') != 'live') {
         $out .= "<meta name=\"robots\" content=\"noindex, nofollow\" />";
         $out .= $robots ? "<!-- $robots -->" : null;
     } elseif ($robots) {
@@ -129,7 +128,6 @@ function arc_meta_robots($atts)
     }
 
     return $out;
-
 }
 
 function arc_meta_keywords($atts)
@@ -425,11 +423,10 @@ function _arc_meta($type = null, $typeId = null)
     }
 
     return $arc_meta;
-
 }
 
-if (@txpinterface == 'admin')
-{
+if (@txpinterface == 'admin') {
+
     register_callback('_arc_meta_article_meta', 'article_ui', 'keywords');
     register_callback('_arc_meta_article_meta_save', 'ping');
     register_callback('_arc_meta_article_meta_save', 'article_saved');
