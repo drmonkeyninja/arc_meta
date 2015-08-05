@@ -365,10 +365,10 @@ function _arc_meta_description()
 {
     global $thisarticle;
 
-    $meta = _arc_meta();
+    $metaDescription = getMetaDescription();
 
-    if (!empty($meta['description'])) {
-        $description = txpspecialchars($meta['description']);
+    if (!empty($metaDescription)) {
+        $description = txpspecialchars($metaDescription);
     } elseif (!empty($thisarticle['excerpt'])) {
         $description = strip_tags($thisarticle['excerpt']);
         $description = substr($description, 0, 200);
