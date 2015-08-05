@@ -451,7 +451,6 @@ function _arc_meta_install()
         `type_id` varchar(128) NOT NULL,
         `title` varchar(250) DEFAULT NULL,
         `override_title` tinyint(1) DEFAULT NULL,
-        `description` varchar(250) DEFAULT NULL,
         `robots` varchar(45) DEFAULT NULL,
         PRIMARY KEY (`id`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;";
@@ -470,7 +469,6 @@ function _arc_meta_install()
         safe_alter('arc_meta', 'ADD image INT(11) DEFAULT NULL');
         // Increased size of title and description columns.
         safe_alter('arc_meta', 'CHANGE title title VARCHAR(250) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL');
-        safe_alter('arc_meta', 'CHANGE description description VARCHAR(250) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL');
     }
 
     // Setup the plugin preferences.
