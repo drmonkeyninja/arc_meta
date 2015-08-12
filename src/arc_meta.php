@@ -728,16 +728,16 @@ function _arc_meta_section_meta($event, $step, $data, $rs)
 
     $form = hInput('arc_meta_id', $meta['id']);
     $form .= "<p class='edit-section-arc_meta_title'>";
-    $form .= "<span class='edit-label'> " . tag('Meta title', 'label', ' for="arc_meta_title"') . '</span>';
-    $form .= "<span class='edit-value'> " . fInput('text', 'arc_meta_title', $meta['title'], '', '', '', '32', '', 'arc_meta_title') . '</span>';
+    $form .= "<span class='txp-label'> " . tag('Meta title', 'label', ' for="arc_meta_title"') . '</span>';
+    $form .= "<span class='txp-value'> " . fInput('text', 'arc_meta_title', $meta['title'], '', '', '', '32', '', 'arc_meta_title') . '</span>';
     $form .= '</p>';
     $form .= "<p class='edit-section-arc_meta_image'>";
-    $form .= "<span class='edit-label'> " . tag('Meta image', 'label', ' for="arc_meta_image"') . '</span>';
-    $form .= "<span class='edit-value'> " . fInput('number', 'arc_meta_image', $meta['image'], '', '', '', '32', '', 'arc_meta_image') . '</span>';
+    $form .= "<span class='txp-label'> " . tag('Meta image', 'label', ' for="arc_meta_image"') . '</span>';
+    $form .= "<span class='txp-value'> " . fInput('number', 'arc_meta_image', $meta['image'], '', '', '', '32', '', 'arc_meta_image') . '</span>';
     $form .= '</p>';
     $form .= "<p class='edit-category-arc_meta_robots'>";
-    $form .= "<span class='edit-label'> " . tag('Meta robots', 'label', ' for="arc_meta_description"') . '</span>';
-    $form .= "<span class='edit-value'> " . selectInput('arc_meta_robots', _arc_meta_robots(), $meta['robots'], 'arc_meta_robots') . '</span>';
+    $form .= "<span class='txp-label'> " . tag('Meta robots', 'label', ' for="arc_meta_description"') . '</span>';
+    $form .= "<span class='txp-value'> " . selectInput('arc_meta_robots', _arc_meta_robots(), $meta['robots'], 'arc_meta_robots') . '</span>';
     $form .= '</p>';
 
     return $data . $form;
