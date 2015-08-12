@@ -712,16 +712,12 @@ function _arc_meta_article_meta($event, $step, $data, $rs)
     $form .= tag('Meta title', 'label', ' for="arc_meta_title"') . '<br />';
     $form .= fInput('text', 'arc_meta_title', $meta['title'], '', '', '', '32', '', 'arc_meta_title');
     $form .= "</p>";
-    $form .= "<p class='arc_meta_description'>";
-    $form .= tag('Meta description', 'label', ' for="arc_meta_description"') . '<br />';
-    $form .= text_area('arc_meta_description', null, null, $meta['description'], 'arc_meta_description');
-    $form .= "</p>";
     $form .= "<p class='edit-category-arc_meta_robots'>";
     $form .= tag('Meta robots', 'label', ' for="arc_meta_description"') . '<br />';
     $form .= selectInput('arc_meta_robots', _arc_meta_robots(), $meta['robots'], 'arc_meta_robots');
     $form .= '</p>';
 
-    return $form.$data;
+    return $form . $data;
 }
 
 function _arc_meta_section_meta($event, $step, $data, $rs)
@@ -789,14 +785,12 @@ function _arc_meta_article_meta_save($event, $step)
 
     $metaId = gps('arc_meta_id');
     $metaTitle = gps('arc_meta_title');
-    $metaDescription = gps('arc_meta_description');
     $metaRobots = gps('arc_meta_robots');
 
     $values = array(
         'type' => 'article',
         'type_id' => $articleId,
         'title' => doSlash($metaTitle),
-        'description' => substr(doSlash($metaDescription), 0, 250),
         'robots' => doSlash($metaRobots)
     );
 
@@ -810,7 +804,7 @@ function _arc_meta_article_meta_save($event, $step)
         // Update existing meta data.
         safe_update('arc_meta', $sql, "id=$metaId");
 
-    } elseif (!empty($metaTitle) || !empty($metaDescription) || !empty($metaRobots)) {
+    } elseif (!empty($metaTitle) || !empty($metaRobots)) {
 
         // Create new meta data only if there is data to be saved.
         safe_insert('arc_meta', $sql);
