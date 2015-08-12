@@ -731,10 +731,6 @@ function _arc_meta_section_meta($event, $step, $data, $rs)
     $form .= "<span class='edit-label'> " . tag('Meta title', 'label', ' for="arc_meta_title"') . '</span>';
     $form .= "<span class='edit-value'> " . fInput('text', 'arc_meta_title', $meta['title'], '', '', '', '32', '', 'arc_meta_title') . '</span>';
     $form .= '</p>';
-    $form .= "<p class='edit-section-arc_meta_description'>";
-    $form .= "<span class='edit-label'> " . tag('Meta description', 'label', ' for="arc_meta_description"') . '</span>';
-    $form .= "<span class='edit-value'> " . text_area('arc_meta_description', null, null, $meta['description'], 'arc_meta_description') . '</span>';
-    $form .= '</p>';
     $form .= "<p class='edit-section-arc_meta_image'>";
     $form .= "<span class='edit-label'> " . tag('Meta image', 'label', ' for="arc_meta_image"') . '</span>';
     $form .= "<span class='edit-value'> " . fInput('number', 'arc_meta_image', $meta['image'], '', '', '', '32', '', 'arc_meta_image') . '</span>';
@@ -744,7 +740,7 @@ function _arc_meta_section_meta($event, $step, $data, $rs)
     $form .= "<span class='edit-value'> " . selectInput('arc_meta_robots', _arc_meta_robots(), $meta['robots'], 'arc_meta_robots') . '</span>';
     $form .= '</p>';
 
-    return $data.$form;
+    return $data . $form;
 }
 
 function _arc_meta_category_meta($event, $step, $data, $rs)
@@ -818,7 +814,6 @@ function _arc_meta_section_meta_save($event, $step)
 
     $metaId = gps('arc_meta_id');
     $metaTitle = gps('arc_meta_title');
-    $metaDescription = gps('arc_meta_description');
     $metaImage = gps('arc_meta_image');
     $metaRobots = gps('arc_meta_robots');
 
@@ -826,7 +821,6 @@ function _arc_meta_section_meta_save($event, $step)
         'type' => 'section',
         'type_id' => $sectionName,
         'title' => doSlash($metaTitle),
-        'description' => substr(doSlash($metaDescription), 0, 250),
         'image' => intval($metaImage),
         'robots' => doSlash($metaRobots)
     );
