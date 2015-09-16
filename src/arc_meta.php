@@ -471,6 +471,16 @@ function _arc_meta_install()
         safe_alter('arc_meta', 'CHANGE title title VARCHAR(250) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL');
     }
 
+    // Upgrade plugin to 2.x.
+    if (in_array('description', $dbTable)) {
+        // Copy meta description data to main TXP tables.
+        safe_query('UPDATE textpattern, arc_meta SET textpattern.description = arc_meta.description WHERE textpattern.ID = arc_meta.type_id AND arc_meta.type = \'article\'');
+        safe_query('UPDATE txp_category, arc_meta SET txp_category.description = arc_meta.description WHERE txp_category.name = arc_meta.type_id AND arc_meta.type = \'category\'');
+        safe_query('UPDATE txp_section, arc_meta SET txp_section.description = arc_meta.description WHERE txp_section.name = arc_meta.type_id AND arc_meta.type = \'section\'');
+        // Drop old meta description column.
+        safe_alter('arc_meta', 'DROP COLUMN description');
+    }
+
     // Setup the plugin preferences.
     _arc_meta_install_prefs();
 
