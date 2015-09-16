@@ -587,7 +587,7 @@ function arc_meta_section_edit()
     $name = gps('name');
 
     $rs = safe_query(
-        'SELECT sections.title AS section, arc_meta.* FROM ' . safe_pfx('txp_section') . ' sections LEFT JOIN ' . safe_pfx('arc_meta') . ' arc_meta ON arc_meta.type = "section" AND arc_meta.type_id = sections.name WHERE sections.name="' . doSlash($name) . '"'
+        'SELECT sections.title AS section, sections.description, arc_meta.* FROM ' . safe_pfx('txp_section') . ' sections LEFT JOIN ' . safe_pfx('arc_meta') . ' arc_meta ON arc_meta.type = "section" AND arc_meta.type_id = sections.name WHERE sections.name="' . doSlash($name) . '"'
     );
 
     $meta = nextRow($rs);
