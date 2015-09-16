@@ -810,6 +810,7 @@ function _arc_meta_section_meta_save($event, $step)
 
     $metaId = gps('arc_meta_id');
     $metaTitle = gps('arc_meta_title');
+    $metaDescription = gps('arc_meta_description');
     $metaImage = gps('arc_meta_image');
     $metaRobots = gps('arc_meta_robots');
 
@@ -836,12 +837,16 @@ function _arc_meta_section_meta_save($event, $step)
         // Update existing meta data.
         safe_update('arc_meta', $sql, "id=$metaId");
 
-    } elseif (!empty($metaTitle) || !empty($metaDescription) || !empty($metaImage) || !empty($metaRobots)) {
+    } elseif (!empty($metaTitle) || !empty($metaImage) || !empty($metaRobots)) {
 
         // Create new meta data only if there is data to be saved.
         safe_insert('arc_meta', $sql);
 
     }
+
+    // Update the meta description.
+    $metaDescription = doSlash($metaDescription);
+    safe_update('txp_section', "description = '$metaDescription'", "name='$sectionName'");
 }
 
 function _arc_meta_category_meta_save($event, $step)
