@@ -82,7 +82,7 @@ function arc_meta_canonical($atts)
         'url' => null
     ), $atts));
 
-    $url = $url !==null ? $url : _arc_meta_url();
+    $url = $url !== null ? $url : _arc_meta_url();
 
     $html = "<link rel=\"canonical\" href=\"$url\" />";
 
@@ -92,12 +92,13 @@ function arc_meta_canonical($atts)
 function arc_meta_description($atts)
 {
     extract(lAtts(array(
-        'description' => null
+        'description' => null,
+        'type' => null
     ), $atts));
 
-    if ($description===null) {
+    if ($description === null) {
         $meta = _arc_meta();
-        $description = !empty($meta['description']) ? txpspecialchars($meta['description'], ENT_QUOTES) : _arc_meta_description();
+        $description = !empty($meta['description']) ? txpspecialchars($meta['description'], ENT_QUOTES) : _arc_meta_description($type);
     }
 
     if ($description) {
@@ -361,11 +362,19 @@ function _arc_meta_image()
     return $image;
 }
 
-function _arc_meta_description()
+/**
+ * Fetch meta description from the given (or automatic) context.
+ *
+ * Category context may be refined by specifying the content type as well
+ * after a dot. e.g. category.image to check image context category.
+ *
+ * @param string $type Flavour of meta content to fetch (section, category, article)
+ */
+function _arc_meta_description($type = null)
 {
     global $thisarticle;
 
-    $metaDescription = getMetaDescription();
+    $metaDescription = getMetaDescription($type);
 
     if (!empty($metaDescription)) {
         $description = txpspecialchars($metaDescription);
