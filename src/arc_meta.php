@@ -37,7 +37,6 @@ function arc_meta_title($atts)
     ), $atts));
 
     if ($title === null) {
-
         $meta = _arc_meta();
 
         $tokens = array(
@@ -68,7 +67,6 @@ function arc_meta_title($atts)
         }
 
         $title = preg_replace(array_keys($tokens), array_values($tokens), $pattern);
-
     }
 
     $html = tag($title, 'title');
@@ -171,7 +169,7 @@ function arc_meta_open_graph($atts)
     if ($site_name) {
         $html .= "<meta property=\"og:site_name\" content=\"$site_name\" />";
     }
-    if ($title)    {
+    if ($title) {
         $html .= "<meta property=\"og:title\" content=\"$title\" />";
     }
     if ($description) {
@@ -341,7 +339,6 @@ function _arc_meta_image()
     $image = $thisarticle['article_image'];
 
     if (intval($image)) {
-
         if ($rs = safe_row('*', 'txp_image', 'id = ' . intval($image))) {
             $image = imagesrcurl($rs['id'], $rs['ext']);
         } else {
@@ -349,7 +346,6 @@ function _arc_meta_image()
         }
 
     } else {
-
         $meta = _arc_meta();
         if (!empty($meta['image']) && $rs = safe_row('*', 'txp_image', 'id = ' . intval($meta['image']))) {
             $image = imagesrcurl($rs['id'], $rs['ext']);
@@ -398,9 +394,7 @@ function _arc_meta($type = null, $typeId = null)
     global $thisarticle, $s, $c, $arc_meta;
 
     if (empty($arc_meta)) {
-
         if (empty($type) || empty($typeId)) {
-
             if (!empty($thisarticle['thisid'])) {
                 $typeId = $thisarticle['thisid'];
                 $type = 'article';
@@ -423,7 +417,6 @@ function _arc_meta($type = null, $typeId = null)
         );
 
         if (!empty($typeId) && !empty($type)) {
-
             $meta = safe_row('*', 'arc_meta', "type_id='$typeId' AND type='$type'");
             $arc_meta = array_merge($arc_meta, $meta);
             return $arc_meta;
@@ -435,7 +428,6 @@ function _arc_meta($type = null, $typeId = null)
 }
 
 if (@txpinterface == 'admin') {
-
     register_callback('_arc_meta_article_meta', 'article_ui', 'keywords');
     register_callback('_arc_meta_article_meta_save', 'ping');
     register_callback('_arc_meta_article_meta_save', 'article_saved');
@@ -551,6 +543,7 @@ function arc_meta_section_tab($event, $step)
 
         case 'save':
             _arc_meta_section_meta_save($event, $step);
+            // Fall through to section list.
 
         default:
             arc_meta_section_list();
@@ -571,7 +564,6 @@ function arc_meta_section_list()
     );
 
     if ($rs) {
-
         $html .= n . '<div id="' . $event . '_container" class="txp-container">';
 
         $html .= n . '<div class="txp-listtables">' . n
@@ -674,7 +666,6 @@ function arc_meta_options($event, $step)
     );
 
     if ($step == 'prefs_save') {
-
         foreach ($fields as $key => $label) {
             $prefs[$key] = trim(gps($key));
             set_pref($key, $prefs[$key]);
@@ -811,12 +802,10 @@ function _arc_meta_article_meta_save($event, $step)
     $sql = implode(', ', $sql);
 
     if ($metaId) {
-
         // Update existing meta data.
         safe_update('arc_meta', $sql, "id=$metaId");
 
     } elseif (!empty($metaTitle) || !empty($metaRobots)) {
-
         // Create new meta data only if there is data to be saved.
         safe_insert('arc_meta', $sql);
 
@@ -852,12 +841,10 @@ function _arc_meta_section_meta_save($event, $step)
     $sql = implode(', ', $sql);
 
     if ($metaId) {
-
         // Update existing meta data.
         safe_update('arc_meta', $sql, "id=$metaId");
 
     } elseif (!empty($metaTitle) || !empty($metaImage) || !empty($metaRobots)) {
-
         // Create new meta data only if there is data to be saved.
         safe_insert('arc_meta', $sql);
 
@@ -891,12 +878,10 @@ function _arc_meta_category_meta_save($event, $step)
     $sql = implode(', ', $sql);
 
     if ($metaId) {
-
         // Update existing meta data.
         safe_update('arc_meta', $sql, "id=$metaId");
 
     } elseif (!empty($metaTitle) || !empty($metaDescription) || !empty($metaImage) || !empty($metaRobots)) {
-
         // Create new meta data only if there is data to be saved.
         safe_insert('arc_meta', $sql);
 
