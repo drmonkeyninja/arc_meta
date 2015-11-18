@@ -1,6 +1,6 @@
 <?php
 $plugin['name'] = 'arc_meta';
-$plugin['version'] = '1.4.0';
+$plugin['version'] = '1.4.1';
 $plugin['author'] = 'Andy Carter';
 $plugin['author_uri'] = 'http://andy-carter.com/';
 $plugin['description'] = 'Title and Meta tags';
@@ -438,9 +438,11 @@ if (@txpinterface == 'admin') {
     register_callback('_arc_meta_category_meta', 'category_ui', 'extend_detail_form');
     register_callback('_arc_meta_category_meta_save', 'category', 'cat_article_save');
 
-    add_privs('arc_meta_section_tab', '1,2,3,4');
-    register_tab($prefs['arc_meta_section_tab'], 'arc_meta_section_tab', 'Sections Meta Data');
-    register_callback('arc_meta_section_tab', 'arc_meta_section_tab');
+    if (!empty($prefs['arc_meta_section_tab'])) {
+        add_privs('arc_meta_section_tab', '1,2,3,4');
+        register_tab($prefs['arc_meta_section_tab'], 'arc_meta_section_tab', 'Sections Meta Data');
+        register_callback('arc_meta_section_tab', 'arc_meta_section_tab');
+    }
 }
 
 function _arc_meta_install()
