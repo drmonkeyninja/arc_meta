@@ -477,9 +477,9 @@ function _arc_meta_install()
     // Upgrade plugin to 2.x.
     if (in_array('description', $dbTable)) {
         // Copy meta description data to main TXP tables.
-        safe_query('UPDATE ' . safe_pfx(textpattern) . ', ' . safe_pfx(arc_meta) . ' SET textpattern.description = arc_meta.description WHERE textpattern.ID = arc_meta.type_id AND arc_meta.type = \'article\' AND arc_meta.description IS NOT NULL AND textpattern.description = \'\'');
-        safe_query('UPDATE ' . safe_pfx(txp_category) . ', ' . safe_pfx(arc_meta) . ' SET txp_category.description = arc_meta.description WHERE txp_category.name = arc_meta.type_id AND arc_meta.type = \'category\' AND arc_meta.description IS NOT NULL AND txp_category.description = \'\'');
-        safe_query('UPDATE ' . safe_pfx(txp_section) . ', ' . safe_pfx(arc_meta) . ' SET txp_section.description = arc_meta.description WHERE txp_section.name = arc_meta.type_id AND arc_meta.type = \'section\' AND arc_meta.description IS NOT NULL AND txp_section.description = \'\'');
+        safe_query('UPDATE ' . safe_pfx('textpattern') . ', ' . safe_pfx('arc_meta') . ' SET textpattern.description = arc_meta.description WHERE textpattern.ID = arc_meta.type_id AND arc_meta.type = \'article\' AND arc_meta.description IS NOT NULL AND textpattern.description = \'\'');
+        safe_query('UPDATE ' . safe_pfx('txp_category') . ', ' . safe_pfx('arc_meta') . ' SET txp_category.description = arc_meta.description WHERE txp_category.name = arc_meta.type_id AND arc_meta.type = \'category\' AND arc_meta.description IS NOT NULL AND txp_category.description = \'\'');
+        safe_query('UPDATE ' . safe_pfx('txp_section') . ', ' . safe_pfx('arc_meta') . ' SET txp_section.description = arc_meta.description WHERE txp_section.name = arc_meta.type_id AND arc_meta.type = \'section\' AND arc_meta.description IS NOT NULL AND txp_section.description = \'\'');
         // Drop old meta description column.
         safe_alter('arc_meta', 'DROP COLUMN description');
     }
