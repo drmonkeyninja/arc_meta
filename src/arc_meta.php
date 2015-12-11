@@ -605,6 +605,7 @@ function arc_meta_section_edit()
 
     // We include the section title as a disabled field for the user's
     // reference.
+    $form .= "<p class='edit-section-arc_meta_section'>";
     $form .= "<span class='edit-label'> " . tag('Section', 'label', ' for="section"') . '</span>';
     $form .= "<span class='edit-value'> " . fInput('text', 'section', $meta['section'], '', '', '', '32', '', 'section', true) . '</span>';
     $form .= '</p>';
@@ -612,6 +613,7 @@ function arc_meta_section_edit()
     // Meta data fields
     $form .= hInput('arc_meta_id', $meta['id']);
     $form .= hInput('name', $name);
+    $form .= "<p class='edit-section-arc_meta_title'>";
     $form .= "<span class='edit-label'> " . tag('Meta title', 'label', ' for="arc_meta_title"') . '</span>';
     $form .= "<span class='edit-value'> " . fInput('text', 'arc_meta_title', $meta['title'], '', '', '', '32', '', 'arc_meta_title') . '</span>';
     $form .= '</p>';
