@@ -428,7 +428,7 @@ function _arc_meta($type = null, $typeId = null)
 }
 
 if (@txpinterface == 'admin') {
-    register_callback('_arc_meta_article_meta', 'article_ui', 'keywords');
+    register_callback('_arc_meta_article_meta', 'article_ui', 'url_title');
     register_callback('_arc_meta_article_meta_save', 'ping');
     register_callback('_arc_meta_article_meta_save', 'article_saved');
     register_callback('_arc_meta_article_meta_save', 'article_posted');
