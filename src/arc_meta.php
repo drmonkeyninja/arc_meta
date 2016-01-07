@@ -769,18 +769,18 @@ function _arc_meta_category_meta($event, $step, $data, $rs)
     $meta = _arc_meta('category', $rs['name']);
 
     $form = hInput('arc_meta_id', $meta['id']);
-    $form .= "<p class='edit-category-arc_meta_title'>";
-    $form .= "<span class='txp-label'> " . tag('Meta title', 'label', ' for="arc_meta_title"') . '</span>';
-    $form .= "<span class='txp-value'> " . fInput('text', 'arc_meta_title', $meta['title'], '', '', '', '32', '', 'arc_meta_title') . '</span>';
-    $form .= '</p>';
-    $form .= "<p class='edit-category-arc_meta_image'>";
-    $form .= "<span class='txp-label'> " . tag('Meta image', 'label', ' for="arc_meta_image"') . '</span>';
-    $form .= "<span class='txp-value'> " . fInput('number', 'arc_meta_image', $meta['image'], '', '', '', '32', '', 'arc_meta_image') . '</span>';
-    $form .= '</p>';
-    $form .= "<p class='edit-category-arc_meta_robots'>";
-    $form .= "<span class='txp-label'> " . tag('Meta robots', 'label', ' for="arc_meta_description"') . '</span>';
-    $form .= "<span class='txp-value'> " . selectInput('arc_meta_robots', _arc_meta_robots(), $meta['robots'], 'arc_meta_robots') . '</span>';
-    $form .= '</p>';
+    $form .= '<div class="txp-form-field edit-category-arc_meta_title">';
+    $form .= '<div class="txp-form-field-label">' . tag('Meta title', 'label', ' for="arc_meta_title"') . '</div>';
+    $form .= '<div class="txp-form-field-value">' . fInput('text', 'arc_meta_title', $meta['title'], '', '', '', '32', '', 'arc_meta_title') . '</div>';
+    $form .= '</div>';
+    $form .= '<div class="txp-form-field edit-category-arc_meta_image">';
+    $form .= '<div class="txp-form-field-label">' . tag('Meta image', 'label', ' for="arc_meta_image"') . '</div>';
+    $form .= '<div class="txp-form-field-value">' . fInput('number', 'arc_meta_image', $meta['image'], '', '', '', '32', '', 'arc_meta_image') . '</div>';
+    $form .= '</div>';
+    $form .= '<div class="txp-form-field edit-category-arc_meta_robots">';
+    $form .= '<div class="txp-form-field-label">' . tag('Meta robots', 'label', ' for="arc_meta_description"') . '</div>';
+    $form .= '<div class="txp-form-field-value">' . selectInput('arc_meta_robots', _arc_meta_robots(), $meta['robots'], 'arc_meta_robots') . '</div>';
+    $form .= '</div>';
 
     return $data . $form;
 }
