@@ -639,7 +639,7 @@ function arc_meta_section_edit()
     $form .= '<div class="txp-form-field-value">' . selectInput('arc_meta_robots', _arc_meta_robots(), $meta['robots'], 'arc_meta_robots') . '</div>';
     $form .= '</div>';
 
-    $form .= '<p class="txp-edit-actions">' . sInput('save') . eInput($event) . fInput('submit', 'save', gTxt('Save'), 'publish') . '</p>';
+    $form .= '<p class="txp-edit-actions">' . sLink('arc_meta_section_tab', '', gTxt('cancel'), 'txp-button') . sInput('save') . eInput($event) . fInput('submit', 'save', gTxt('Save'), 'publish') . '</p>';
 
     $form .= '</div>';
 
