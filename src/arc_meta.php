@@ -15,6 +15,18 @@ if (!defined('txpinterface')) {
 # --- BEGIN PLUGIN CODE ---
 global $prefs, $txpcfg;
 
+// Register tags.
+Txp::get('\Textpattern\Tag\Registry')
+    ->register('arc_meta_title')
+    ->register('arc_meta_description')
+    ->register('arc_meta_canonical')
+    ->register('arc_meta_robots')
+    ->register('arc_meta_keywords')
+    ->register('arc_meta_open_graph')
+    ->register('arc_meta_twitter_card')
+    ->register('arc_meta_organization')
+    ->register('arc_meta_person');
+
 register_callback('_arc_meta_install', 'plugin_lifecycle.arc_meta', 'installed');
 register_callback('_arc_meta_uninstall', 'plugin_lifecycle.arc_meta', 'deleted');
 register_callback('arc_meta_options', 'plugin_prefs.arc_meta');
