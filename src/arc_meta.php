@@ -107,7 +107,7 @@ function arc_meta_description($atts)
     ), $atts));
 
     if ($description === null) {
-        $meta = _arc_meta();
+        $meta = _arc_meta($type);
         $description = !empty($meta['description']) ? txpspecialchars($meta['description'], ENT_QUOTES) : _arc_meta_description($type);
     }
 
@@ -403,9 +403,34 @@ function _arc_meta_description($type = null)
 
 function _arc_meta($type = null, $typeId = null)
 {
-    global $thisarticle, $s, $c, $arc_meta;
+    global $thisarticle, $thiscategory, $thissection, $s, $c, $arc_meta;
 
     if (empty($arc_meta)) {
+        if (empty($type)) {
+            if (!empty($thisarticle['thisid'])) {
+                $typeId = $typeId ?: $thisarticle['thisid'];
+                $type = 'article';
+            } elseif (!empty($c)) {
+                $typeId = $typeId ?: $c;
+                $type = 'category';
+            } elseif (!empty($s)) {
+                $typeId = $typeId ?: $s;
+                $type = 'section';
+            }
+
+        } elseif ($typeId === null) {
+            if (strpos($type, 'category') === 0) {
+                $type = 'category';
+                $typeId = $thiscategory ? $thiscategory['name'] : $c;
+            } elseif ($type === 'section') {
+                $typeId = $thissection['name'] ? $thissection['name'] : $s;
+            } elseif ($type === 'article') {
+                assert_article();
+                $typeId = $thisarticle ? $thisarticle['thisid'] : null;
+            }
+
+        }
+
         if (empty($type) || empty($typeId)) {
             if (!empty($thisarticle['thisid'])) {
                 $typeId = $thisarticle['thisid'];
