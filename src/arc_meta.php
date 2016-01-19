@@ -112,6 +112,7 @@ function arc_meta_description($atts)
     }
 
     if ($description) {
+        $description = trim($description);
         return "<meta name=\"description\" content=\"$description\" />";
     }
 
