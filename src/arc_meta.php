@@ -45,37 +45,53 @@ function arc_meta_title($atts)
         'category_title' => $prefs['arc_meta_category_title'],
         'section_title' => $prefs['arc_meta_section_title'],
         'section_category_title' => $prefs['arc_meta_section_category_title'],
-        'homepage_title' => $prefs['arc_meta_homepage_title']
+        'homepage_title' => $prefs['arc_meta_homepage_title'],
+        'type' => null
     ), $atts));
 
     if ($title === null) {
-        $meta = _arc_meta();
+        $meta = _arc_meta($type);
+
+        // Determine the title type.
+        if ($type === null) {
+            if (!empty($parent_id) || !empty($thisarticle['title'])) {
+                $type = 'comments';
+            } elseif ($q) {
+                $type = 'search';
+            } elseif ($c) {
+                $type = 'category';
+            } elseif ($s and $s != 'default') {
+                $type = 'section';
+            } else {
+                $type = 'article';
+            }
+        }
 
         $tokens = array(
             '_%n_' => txpspecialchars($sitename),
             '_%t_' => txpspecialchars($prefs['site_slogan'])
         );
 
-        if (!empty($parent_id) || !empty($thisarticle['title'])) {
+        if ($type === 'comments') {
             $tokens['_%a_'] = empty($meta['title']) ? escape_title($thisarticle['title']) : $meta['title'];
             $tokens['_%s_'] = txpspecialchars(fetch_section_title($thisarticle['section']));
             $pattern = !empty($parent_id) ? $comment_title : $article_title;
-        } elseif ($q) {
+        } elseif ($type === 'search') {
             $tokens['_%q_'] = txpspecialchars($q);
             $pattern = $search_title;
-        } elseif ($c) {
-            $tokens['_%c_'] = empty($meta['title']) ? txpspecialchars(fetch_category_title($c, $context)) : $meta['title'];
+        } elseif ($type === 'category') {
+            $tokens['_%c_'] = $meta['title'] ?: txpspecialchars(fetch_category_title($c, $context));
             if ($s and $s != 'default') {
                 $tokens['_%s_'] = txpspecialchars(fetch_section_title($s));
                 $pattern = $section_category_title;
             } else {
                 $pattern = $category_title;
             }
-        } elseif ($s and $s != 'default') {
-            $tokens['_%s_'] = empty($meta['title']) ? txpspecialchars(fetch_section_title($s)) : $meta['title'];
+        } elseif ($type === 'section') {
+            $tokens['_%s_'] = $meta['title'] ?: txpspecialchars(fetch_section_title($s));
             $pattern = $section_title;
         } else {
-            $pattern = !empty($meta['title']) ? $meta['title'] : $homepage_title;
+            $pattern = $meta['title'] ?: $homepage_title;
         }
 
         $title = preg_replace(array_keys($tokens), array_values($tokens), $pattern);
