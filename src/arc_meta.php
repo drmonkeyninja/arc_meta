@@ -138,11 +138,12 @@ function arc_meta_description($atts)
 function arc_meta_robots($atts)
 {
     extract(lAtts(array(
-        'robots' => null
+        'robots' => null,
+        'type' => null
     ), $atts));
 
     if ($robots === null) {
-        $meta = _arc_meta();
+        $meta = _arc_meta($type);
         $robots = !empty($meta['robots']) ? $meta['robots'] : null;
     }
 
