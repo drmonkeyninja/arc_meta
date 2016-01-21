@@ -986,6 +986,7 @@ The @arc_meta_title@ tag attributes override the defaults. To set the default pa
 * category_title -- sets the pattern for category page titles
 * section_title -- sets the pattern for section page titles
 * homepage_title -- sets the pattern for the homepage title
+* type -- override the content type for the title
 
 h4. Title Tokens
 
@@ -1033,6 +1034,7 @@ bc. <txp:arc_meta_description />
 h4. Attributes
 
 * description -- overrides the description set using arc_meta's description field on the article Write page or section/category edit page
+* type -- override the content type for the meta description
 
 h3. arc_meta_robots
 
@@ -1043,6 +1045,7 @@ bc. <txp:arc_meta_robots />
 h4. Attributes
 
 * robots -- overrides the robots instructions set using the meta robots field on the article Write page or section/category edit page
+* type -- override the content type for the robots meta data
 
 h3. arc_meta_keywords
 
