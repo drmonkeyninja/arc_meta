@@ -419,11 +419,30 @@ function _arc_meta_description($type = null)
     return $description;
 }
 
-function _arc_meta($type = null, $typeId = null)
+/**
+ * Fetches meta data for the current context.
+ * @param  string  $type   Context
+ * @param  int     $typeId Context's primary key
+ * @param  boolean $admin  Pass true if called from the admin area
+ * @return array           Meta data
+ */
+function _arc_meta($type = null, $typeId = null, $admin = false)
 {
     global $thisarticle, $thiscategory, $thissection, $s, $c, $arc_meta;
 
     if (empty($arc_meta)) {
+        $arc_meta = array(
+            'id' => null,
+            'title' => null,
+            'description' => null,
+            'image' => null,
+            'robots' => null
+        );
+
+        if ($admin === true && $typeId === null) {
+            return $arc_meta;
+        }
+
         if (empty($type)) {
             if (!empty($thisarticle['thisid'])) {
                 $typeId = $typeId ?: $thisarticle['thisid'];
@@ -462,14 +481,6 @@ function _arc_meta($type = null, $typeId = null)
             }
 
         }
-
-        $arc_meta = array(
-            'id' => null,
-            'title' => null,
-            'description' => null,
-            'image' => null,
-            'robots' => null
-        );
 
         if (!empty($typeId) && !empty($type)) {
             $meta = safe_row('*', 'arc_meta', "type_id='$typeId' AND type='$type'");
@@ -774,7 +785,7 @@ function _arc_meta_article_meta($event, $step, $data, $rs)
 {
     // Get the article meta data.
     $articleId = !empty($rs['ID']) ? $rs['ID'] : null;
-    $meta = _arc_meta('article', $articleId);
+    $meta = _arc_meta('article', $articleId, true);
 
     $form = hInput('arc_meta_id', $meta['id']);
     $form .= "<p class='arc_meta_title'>";
@@ -793,7 +804,7 @@ function _arc_meta_section_meta($event, $step, $data, $rs)
 {
     // Get the section meta data.
     $sectionName = !empty($rs['name']) ? $rs['name'] : null;
-    $meta = _arc_meta('section', $sectionName);
+    $meta = _arc_meta('section', $sectionName, true);
 
     $form = hInput('arc_meta_id', $meta['id']);
     $form .= '<div class="txp-form-field edit-section-arc_meta_title">';
@@ -821,7 +832,7 @@ function _arc_meta_category_meta($event, $step, $data, $rs)
     }
 
     // Get the existing meta data for this category.
-    $meta = _arc_meta('category', $rs['name']);
+    $meta = _arc_meta('category', $rs['name'], true);
 
     $form = hInput('arc_meta_id', $meta['id']);
     $form .= '<div class="txp-form-field edit-category-arc_meta_title">';
