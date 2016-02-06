@@ -13,7 +13,7 @@ if (!defined('txpinterface')) {
 }
 
 # --- BEGIN PLUGIN CODE ---
-global $prefs, $txpcfg;
+global $prefs, $txpcfg, $arc_meta;
 
 // Register tags.
 Txp::get('\Textpattern\Tag\Registry')
