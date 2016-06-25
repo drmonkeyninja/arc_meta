@@ -8,6 +8,46 @@ $plugin['order'] = '5';
 $plugin['type'] = '5';
 $plugin['flags'] = '3';
 
+// Plugin 'textpack' is optional. It provides i18n strings to be used in conjunction with gTxt().
+$plugin['textpack'] = <<< EOT
+#@public
+#@language en-gb
+arc_meta => Metadata (arc_meta)
+arc_meta_title => Meta title
+arc_meta_description => Meta description
+arc_meta_image => Meta image
+arc_meta_robots => Meta robots
+arc_meta => arc_meta
+arc_meta_article_title => Article page titles pattern
+arc_meta_comment_title => Comment page titles pattern
+arc_meta_search_title => Search page titles pattern
+arc_meta_category_title => Category titles pattern
+arc_meta_section_title => Section titles pattern
+arc_meta_section_category_title => Section category titles pattern
+arc_meta_homepage_title => Homepage title pattern
+arc_meta_section_tab => Additional panel location for sections meta data edit
+arc_meta_section_tab_content => Content
+arc_meta_section_tab_extensions => Extensions
+arc_meta_section_tab_hidden => Hidden
+#@language fr-fr
+arc_meta => Métadonnées (arc_meta)
+arc_meta_title => Méta-titre
+arc_meta_description => Méta-description
+arc_meta_image => Méta-image
+arc_meta_robots => Méta-robots
+arc_meta_article_title => Méta-titre des articles
+arc_meta_comment_title => Méta-titre des commentaires
+arc_meta_search_title => Méta-titre des résultats de recherche
+arc_meta_category_title => Méta-titre des catgéories
+arc_meta_section_title => Méta-titre des sections
+arc_meta_section_category_title => Méta-titre des catégories d'une section
+arc_meta_homepage_title => Méta-titre de la page d'accueil
+arc_meta_section_tab => Panneau d'édition des métadonnées de sections
+arc_meta_section_tab_content => Contenu
+arc_meta_section_tab_extensions => Extensions
+arc_meta_section_tab_hidden => Caché
+EOT;
+
 if (!defined('txpinterface')) {
     @include_once('zem_tpl.php');
 }
@@ -31,6 +71,8 @@ register_callback('_arc_meta_install', 'plugin_lifecycle.arc_meta', 'installed')
 register_callback('_arc_meta_uninstall', 'plugin_lifecycle.arc_meta', 'deleted');
 register_callback('arc_meta_options', 'plugin_prefs.arc_meta');
 add_privs('plugin_prefs.arc_meta', '1,2');
+add_privs('prefs.arc_meta', '1,2');
+
 
 function arc_meta_title($atts)
 {
@@ -561,31 +603,40 @@ function _arc_meta_install()
  */
 function _arc_meta_install_prefs()
 {
+    if (!isset($prefs['arc_meta_homepage_title'])) {
+        set_pref('arc_meta_homepage_title', '%n | %t', 'arc_meta', PREF_PLUGIN, 'text_input', 10);
+    }
     if (!isset($prefs['arc_meta_article_title'])) {
-        set_pref('arc_meta_article_title', '%a | %n', 'arc_meta', 1, 'text_input');
+        set_pref('arc_meta_article_title', '%a | %n', 'arc_meta', PREF_PLUGIN, 'text_input', 20);
     }
     if (!isset($prefs['arc_meta_comment_title'])) {
-        set_pref('arc_meta_comment_title', gTxt('comments_on').' %a | %n', 'arc_meta', 1, 'text_input');
+        set_pref('arc_meta_comment_title', gTxt('comments_on').' %a | %n', 'arc_meta', PREF_PLUGIN, 'text_input', 30);
     }
     if (!isset($prefs['arc_meta_search_title'])) {
-        set_pref('arc_meta_search_title', gTxt('search_results') . ': ' . '%q | %n', 'arc_meta', 1, 'text_input');
+        set_pref('arc_meta_search_title', gTxt('search_results') . ': ' . '%q | %n', 'arc_meta', PREF_PLUGIN, 'text_input', 40);
     }
     if (!isset($prefs['arc_meta_category_title'])) {
-        set_pref('arc_meta_category_title', '%c | %n', 'arc_meta', 1, 'text_input');
+        set_pref('arc_meta_category_title', '%c | %n', 'arc_meta', PREF_PLUGIN, 'text_input', 50);
     }
     if (!isset($prefs['arc_meta_section_title'])) {
-        set_pref('arc_meta_section_title', '%s | %n', 'arc_meta', 1, 'text_input');
+        set_pref('arc_meta_section_title', '%s | %n', 'arc_meta', PREF_PLUGIN, 'text_input', 60);
     }
     if (!isset($prefs['arc_meta_section_category_title'])) {
-        set_pref('arc_meta_section_category_title', '%c - %s | %n', 'arc_meta', 1, 'text_input');
-    }
-    if (!isset($prefs['arc_meta_homepage_title'])) {
-        set_pref('arc_meta_homepage_title', '%n | %t', 'arc_meta', 1, 'text_input');
+        set_pref('arc_meta_section_category_title', '%c - %s | %n', 'arc_meta', PREF_PLUGIN, 'text_input', 70);
     }
     if (!isset($prefs['arc_meta_section_tab'])) {
-        set_pref('arc_meta_section_tab', 'content', 'arc_meta', 1, 'text_input');
+        set_pref('arc_meta_section_tab', 'content', 'arc_meta', PREF_PLUGIN, '_arc_meta_section_tab_select', 80);
     }
     return;
+}
+
+function _arc_meta_section_tab_select($name, $val) {
+    $vals = array(
+        'content'=> gtxt('arc_meta_section_tab_content'),
+        'extensions'=> gtxt('arc_meta_section_tab_extensions'),
+        'hidden'=> gtxt('arc_meta_section_tab_hidden')
+    );
+    return selectInput($name, $vals, $val);
 }
 
 function _arc_meta_uninstall()
@@ -599,6 +650,9 @@ function _arc_meta_uninstall()
     if (!safe_query($sql)) {
         return 'Error - unable to delete arc_meta preferences';
     }
+
+    safe_delete('txp_lang', "owner LIKE 'arc\_meta'");
+
     return;
 }
 
@@ -637,7 +691,7 @@ function arc_meta_section_list()
         $html .= n . '<div class="txp-listtables">' . n
                 . n . startTable('', '', 'txp-list')
                 . n . '<thead>'
-                . n . tr(hCell('Name') . hCell('Title') . hCell('Meta Title') . hCell('Manage'))
+                . n . tr(hCell('Name') . hCell('Title') . hCell(gtxt('arc_meta_title')) . hCell('Manage'))
             . n . '</thead>';
 
         while ($row = nextRow($rs)) {
@@ -689,19 +743,19 @@ function arc_meta_section_edit()
     $form .= hInput('arc_meta_id', $meta['id']);
     $form .= hInput('name', $name);
     $form .= '<div class="txp-form-field edit-section-arc_meta_title">';
-    $form .= '<div class="txp-form-field-label">' . tag('Meta title', 'label', ' for="arc_meta_title"') . '</div>';
+    $form .= '<div class="txp-form-field-label">' . tag(gtxt('arc_meta_title'), 'label', ' for="arc_meta_title"') . '</div>';
     $form .= '<div class="txp-form-field-value">' . fInput('text', 'arc_meta_title', $meta['title'], '', '', '', '32', '', 'arc_meta_title') . '</div>';
     $form .= '</div>';
     $form .= '<div class="txp-form-field txp-form-field-textarea edit-section-arc_meta_description">';
-    $form .= '<div class="txp-form-field-label">' . tag('Meta description', 'label', ' for="arc_meta_description"') . '</div>';
+    $form .= '<div class="txp-form-field-label">' . tag(gtxt('arc_meta_description'), 'label', ' for="arc_meta_description"') . '</div>';
     $form .= '<div class="txp-form-field-value">' . text_area('arc_meta_description', null, null, $meta['description'], 'arc_meta_description') . '</div>';
     $form .= '</div>';
     $form .= '<div class="txp-form-field edit-section-arc_meta_image">';
-    $form .= '<div class="txp-form-field-label">' . tag('Meta image', 'label', ' for="arc_meta_image"') . '</div>';
+    $form .= '<div class="txp-form-field-label">' . tag(gtxt('arc_meta_image'), 'label', ' for="arc_meta_image"') . '</div>';
     $form .= '<div class="txp-form-field-value">' . fInput('number', 'arc_meta_image', $meta['image'], '', '', '', '32', '', 'arc_meta_image') . '</div>';
     $form .= '</div>';
     $form .= '<div class="txp-form-field edit-section-arc_meta_robots">';
-    $form .= '<div class="txp-form-field-label">' . tag('Meta robots', 'label', ' for="arc_meta_description"') . '</div>';
+    $form .= '<div class="txp-form-field-label">' . tag(gtxt('arc_meta_robots'), 'label', ' for="arc_meta_description"') . '</div>';
     $form .= '<div class="txp-form-field-value">' . selectInput('arc_meta_robots', _arc_meta_robots(), $meta['robots'], 'arc_meta_robots') . '</div>';
     $form .= '</div>';
 
@@ -714,71 +768,9 @@ function arc_meta_section_edit()
     echo $html;
 }
 
-function arc_meta_options($event, $step)
-{
-    global $prefs;
-
-    if ($step == 'prefs_save') {
-        pagetop('arc_meta', 'Preferences saved');
-    } else {
-        pagetop('arc_meta');
-    }
-
-    // Define the form fields.
-    $fields = array(
-        'arc_meta_article_title' => 'Article Page Titles',
-        'arc_meta_comment_title' => 'Comment Page Titles',
-        'arc_meta_search_title' => 'Search Page Titles',
-        'arc_meta_category_title' => 'Category Titles',
-        'arc_meta_section_title' => 'Section Titles',
-        'arc_meta_section_category_title' => 'Section Category Titles',
-        'arc_meta_section_tab' => 'Location of Panel'
-    );
-
-    if ($step == 'prefs_save') {
-        foreach ($fields as $key => $label) {
-            $prefs[$key] = trim(gps($key));
-            set_pref($key, $prefs[$key]);
-        }
-
-    }
-
-    // Remove the arc_meta_section_tab field as we want to manually add this.
-    unset($fields['arc_meta_section_tab']);
-
-    $form = '';
-
-    $form .= hed('Page Title Patterns', 2);
-
-    foreach ($fields as $key => $label) {
-        $form .= "<p class='$key'><span class='edit-label'><label for='$key'>$label</label></span>";
-        $form .= "<span class='edit-value'>" . fInput('text', $key, $prefs[$key], '', '', '', '', '', $key) . "</span>";
-        $form .= '</p>';
-    }
-
-    $panels = array(
-        'content' => 'Content',
-        'extensions' => 'Extensions',
-        '' => 'Hidden'
-    );
-
-    $panel = $prefs['arc_meta_section_tab'];
-
-    $form .= hed('Sections Meta Data Panel', 2);
-    $form .= '<p class="arc_meta_section_tab"><span class="edit-label"><label for="arc_meta_section_tab">Location of Panel</label></span>';
-    $form .= '<span class="edit-value">' . selectInput('arc_meta_section_tab', $panels, $panel, '', '', 'arc_meta_section_tab') . "</span>";
-    $form .= '</p>';
-
-    $form .= sInput('prefs_save') . n . eInput('plugin_prefs.arc_meta');
-
-    $form .= '<p>' . fInput('submit', 'Submit', gTxt('save_button'), 'publish') . '</p>';
-
-    $html = "<h1 class='txp-heading'>arc_meta</h1>";
-    $html .= form("<div class='txp-edit'>" . $form . "</div>", " class='edit-form'");
-
-    echo $html;
-
-    return;
+function arc_meta_options() {
+    $link = defined('PREF_PLUGIN') ? '?event=prefs' : '?event=prefs#prefs_group_arc_meta';
+    header('Location: ' . $link);
 }
 
 function _arc_meta_article_meta($event, $step, $data, $rs)
@@ -789,11 +781,11 @@ function _arc_meta_article_meta($event, $step, $data, $rs)
 
     $form = hInput('arc_meta_id', $meta['id']);
     $form .= "<p class='arc_meta_title'>";
-    $form .= tag('Meta title', 'label', ' for="arc_meta_title"') . '<br />';
+    $form .= tag(gtxt('arc_meta_title'), 'label', ' for="arc_meta_title"') . '<br />';
     $form .= fInput('text', 'arc_meta_title', $meta['title'], '', '', '', '32', '', 'arc_meta_title');
     $form .= "</p>";
     $form .= "<p class='edit-category-arc_meta_robots'>";
-    $form .= tag('Meta robots', 'label', ' for="arc_meta_description"') . '<br />';
+    $form .= tag(gtxt('arc_meta_robots'), 'label', ' for="arc_meta_description"') . '<br />';
     $form .= selectInput('arc_meta_robots', _arc_meta_robots(), $meta['robots'], 'arc_meta_robots');
     $form .= '</p>';
 
@@ -808,15 +800,15 @@ function _arc_meta_section_meta($event, $step, $data, $rs)
 
     $form = hInput('arc_meta_id', $meta['id']);
     $form .= '<div class="txp-form-field edit-section-arc_meta_title">';
-    $form .= '<div class="txp-form-field-label">' . tag('Meta title', 'label', ' for="arc_meta_title"') . '</div>';
+    $form .= '<div class="txp-form-field-label">' . tag(gtxt('arc_meta_title'), 'label', ' for="arc_meta_title"') . '</div>';
     $form .= '<div class="txp-form-field-value">' . fInput('text', 'arc_meta_title', $meta['title'], '', '', '', '32', '', 'arc_meta_title') . '</div>';
     $form .= '</div>';
     $form .= '<div class="txp-form-field edit-section-arc_meta_image">';
-    $form .= '<div class="txp-form-field-label">' . tag('Meta image', 'label', ' for="arc_meta_image"') . '</div>';
+    $form .= '<div class="txp-form-field-label">' . tag(gtxt('arc_meta_image'), 'label', ' for="arc_meta_image"') . '</div>';
     $form .= '<div class="txp-form-field-value">' . fInput('number', 'arc_meta_image', $meta['image'], '', '', '', '32', '', 'arc_meta_image') . '</div>';
     $form .= '</div>';
     $form .= '<div class="txp-form-field edit-section-arc_meta_robots">';
-    $form .= '<div class="txp-form-field-label">' . tag('Meta robots', 'label', ' for="arc_meta_description"') . '</div>';
+    $form .= '<div class="txp-form-field-label">' . tag(gtxt('arc_meta_robots'), 'label', ' for="arc_meta_description"') . '</div>';
     $form .= '<div class="txp-form-field-value">' . selectInput('arc_meta_robots', _arc_meta_robots(), $meta['robots'], 'arc_meta_robots') . '</div>';
     $form .= '</div>';
 
@@ -836,15 +828,15 @@ function _arc_meta_category_meta($event, $step, $data, $rs)
 
     $form = hInput('arc_meta_id', $meta['id']);
     $form .= '<div class="txp-form-field edit-category-arc_meta_title">';
-    $form .= '<div class="txp-form-field-label">' . tag('Meta title', 'label', ' for="arc_meta_title"') . '</div>';
+    $form .= '<div class="txp-form-field-label">' . tag(gtxt('arc_meta_title'), 'label', ' for="arc_meta_title"') . '</div>';
     $form .= '<div class="txp-form-field-value">' . fInput('text', 'arc_meta_title', $meta['title'], '', '', '', '32', '', 'arc_meta_title') . '</div>';
     $form .= '</div>';
     $form .= '<div class="txp-form-field edit-category-arc_meta_image">';
-    $form .= '<div class="txp-form-field-label">' . tag('Meta image', 'label', ' for="arc_meta_image"') . '</div>';
+    $form .= '<div class="txp-form-field-label">' . tag(gtxt('arc_meta_image'), 'label', ' for="arc_meta_image"') . '</div>';
     $form .= '<div class="txp-form-field-value">' . fInput('number', 'arc_meta_image', $meta['image'], '', '', '', '32', '', 'arc_meta_image') . '</div>';
     $form .= '</div>';
     $form .= '<div class="txp-form-field edit-category-arc_meta_robots">';
-    $form .= '<div class="txp-form-field-label">' . tag('Meta robots', 'label', ' for="arc_meta_description"') . '</div>';
+    $form .= '<div class="txp-form-field-label">' . tag(gtxt('arc_meta_robots'), 'label', ' for="arc_meta_description"') . '</div>';
     $form .= '<div class="txp-form-field-value">' . selectInput('arc_meta_robots', _arc_meta_robots(), $meta['robots'], 'arc_meta_robots') . '</div>';
     $form .= '</div>';
 
