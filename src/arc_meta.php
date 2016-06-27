@@ -769,7 +769,7 @@ function arc_meta_section_edit()
 }
 
 function arc_meta_options() {
-    $link = defined('PREF_PLUGIN') ? '?event=prefs' : '?event=prefs#prefs_group_arc_meta';
+    $link = '?event=prefs#prefs_group_arc_meta';
     header('Location: ' . $link);
 }
 
