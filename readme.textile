@@ -224,3 +224,7 @@ The description will be used for the @arc_meta_description@ tag and for the desc
 h3. Plugin Options
 
 From the plugin's options page you can set the default patterns used for the arc_meta_title tag. These can all be overridden when the tag is included in your page templates, but it may be easier to set the default patterns if you want to change the ones that come with the plugin when installed.
+
+h2. Translations
+
+The admin interface of this plugin has been translated into French thanks to "Nicolas Morand":https://github.com/NicolasGraph.
