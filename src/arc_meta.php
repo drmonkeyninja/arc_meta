@@ -768,7 +768,8 @@ function arc_meta_section_edit()
     echo $html;
 }
 
-function arc_meta_options() {
+function arc_meta_options()
+{
     $link = '?event=prefs#prefs_group_arc_meta';
     header('Location: ' . $link);
 }
