@@ -1,0 +1,15 @@
+h1. Contributing to arc_meta
+
+Thanks for showing an interest in contributing to this Textpattern plugin.
+
+Please ensure your pull request adheres to the following guidelines:
+
+* Use the "PSR2 coding standard":https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-2-coding-style-guide.md (and use "EditorConfig":http://editorconfig.org/ if your text editor supports it).
+* Make sure your text editor is set to remove trailing whitespace.
+* If you are contributing a new feature please raise a 'New Feature' issue first so as to avoid disappointment if your pull request is rejected.
+* If you are updating and/or improving the documentation please check your spelling and grammar.
+* Code, comments and documentation need to be in English.
+
+If you're not comfortable contributing directly to the code, please feel free to raise issues for bugs and new features. These contributions are just as welcome.
+
+Again, thank you for helping support this plugin and making it awesome!
