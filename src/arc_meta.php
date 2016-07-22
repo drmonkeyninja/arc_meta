@@ -630,7 +630,8 @@ function _arc_meta_install_prefs()
     return;
 }
 
-function _arc_meta_section_tab_select($name, $val) {
+function _arc_meta_section_tab_select($name, $val)
+{
     $vals = array(
         'content'=> gtxt('arc_meta_section_tab_content'),
         'extensions'=> gtxt('arc_meta_section_tab_extensions'),
