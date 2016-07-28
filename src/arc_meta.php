@@ -10,7 +10,7 @@ $plugin['flags'] = '3';
 
 // Plugin 'textpack' is optional. It provides i18n strings to be used in conjunction with gTxt().
 $plugin['textpack'] = <<< EOT
-#@public
+#@admin
 #@language en-gb
 arc_meta => Metadata (arc_meta)
 arc_meta_title => Meta title
@@ -630,7 +630,8 @@ function _arc_meta_install_prefs()
     return;
 }
 
-function _arc_meta_section_tab_select($name, $val) {
+function _arc_meta_section_tab_select($name, $val)
+{
     $vals = array(
         'content'=> gtxt('arc_meta_section_tab_content'),
         'extensions'=> gtxt('arc_meta_section_tab_extensions'),
